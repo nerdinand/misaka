@@ -5,6 +5,6 @@
     "test": "node ./bin/picarto-test.js"
   },
   "dependencies": {
-    "firebase": "~2.0.4"
+    "firebase": "2.0.3"
   }
 }

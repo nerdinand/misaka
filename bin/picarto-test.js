@@ -1,6 +1,7 @@
 var path = require('path');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
+//require('firebase').enableLogging(true);
 
 var config = new Config();
 config.read(path.join(__dirname, '..', 'config', 'misaka.json'), function(err) {
@@ -21,16 +22,20 @@ config.read(path.join(__dirname, '..', 'config', 'misaka.json'), function(err) {
     if(err) return;
 
     console.log('Joining room...');
-    var room = client.join('lumineko');
+    var room = client.join('saneki');
 
-    //client.message('lumineko', 'test');
+    room.onMessage(function(e) {
+      //console.log(['message', e.val()]);
+      var data = e.val();
+      console.log(data.user + ': ' + data.message);
 
-    client.onMessage('lumineko', function(msg) {
-      console.log(['message', msg]);
+      if(data.user === 'saneki' && data.message === '!salute') {
+        room.message('*salutes*');
+      }
     });
 
-    client.onClear('lumineko', function() {
-      console.log(['clear']);
+    room.onClear(function(e) {
+      console.log(['clear', e.val()]);
     });
   });
 });
