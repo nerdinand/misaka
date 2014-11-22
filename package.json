@@ -1,0 +1,10 @@
+{
+  "name": "misaka",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "node ./bin/picarto-test.js"
+  },
+  "dependencies": {
+    "firebase": "~2.0.4"
+  }
+}
