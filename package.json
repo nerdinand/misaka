@@ -2,9 +2,11 @@
   "name": "misaka",
   "version": "0.0.0",
   "scripts": {
+    "start": "node ./bin/misaka.js",
     "test": "node ./bin/picarto-test.js"
   },
   "dependencies": {
-    "firebase": "2.0.3"
+    "firebase": "2.0.3",
+    "minimist": "~1.1.0"
   }
 }
