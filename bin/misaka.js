@@ -67,10 +67,23 @@ Misaka.prototype.initConfig = function() {
 };
 
 Misaka.prototype.initRoom = function(room) {
-  room.onMessage(function(e) {
-    var data = e.val();
+  room.onMessage(function(snapshot) {
+    var data = snapshot.val();
     console.log(data.user + ': ' + data.message);
+
+    if(data.user === 'saneki' && data.message === '!time') {
+      room.message('Current time: ' + (new Date()).toString());
+    }
+
+  }).onUserJoin(function(snapshot) {
+    var data = snapshot.val();
+    console.log('*** ' + data.chatUsername + ' has joined the room ***');
+  }).onUserLeave(function(snapshot) {
+    var data = snapshot.val();
+    console.log('*** ' + data.chatUsername + ' has left the room ***');
   });
+
+  room.connect();
 };
 
 Misaka.prototype.printHelp = function() {
