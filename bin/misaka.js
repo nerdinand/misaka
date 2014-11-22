@@ -1,6 +1,8 @@
+var fs = require('fs');
 var path = require('path');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
+var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 
 var Misaka = function() {
   this.initArgs();
@@ -15,6 +17,11 @@ var Misaka = function() {
     console.error('Couldn\'t read config file, aborting');
     process.exit(1);
   }
+
+  // For now, commands just an object: name -> module with onCommand
+  this.cmdproc = new CommandProcessor();
+  this.commands = {};
+  this.initModules();
 
   // argv overrides config
   if(this.argv.room) this.config.room = this.argv.room;
@@ -66,14 +73,72 @@ Misaka.prototype.initConfig = function() {
   return this.config.readSync(defaultPath);
 };
 
+Misaka.prototype.initModules = function() {
+  var misaka = this;
+  this.modules = [];
+
+  var dir = path.join(__dirname, '..', 'lib', 'modules');
+  var loaded = [];
+
+  var list = fs.readdirSync(dir);
+  list.forEach(function(file) {
+    var fpath = path.join(dir, file);
+
+    // Try to require the module
+    try {
+      loaded.push(require(fpath));
+    } catch(e) {
+      console.warn('Error loading module at ' + fpath + ': ', e);
+    }
+  });
+
+  console.log('Loaded ' + loaded.length + ' module(s)');
+
+  // Load each module
+  loaded.forEach(function(module) {
+    misaka.loadModule(module);
+  });
+};
+
+Misaka.prototype.loadModule = function(Module) {
+  var module = new Module();
+
+  if(!(module.info instanceof Object)) {
+    return;
+  }
+
+  if(module.info.command !== undefined) {
+    this.commands[module.info.command] = module;
+  }
+};
+
 Misaka.prototype.initRoom = function(room) {
+  var misaka = this;
+
   room.onMessage(function(snapshot) {
     var data = snapshot.val();
     console.log(data.user + ': ' + data.message);
 
-    if(data.user === 'saneki' && data.message === '!time') {
-      room.message('Current time: ' + (new Date()).toString());
+    // Check if command
+    if(misaka.cmdproc.isCommand(data.user, data.message)) {
+      var cmdname = misaka.cmdproc.getCommandName(data.message);
+
+      var module = misaka.commands[cmdname];
+      if(module) {
+        // For now, result is message to say in chat
+        result = module.onCommand(data.message);
+
+        if(result !== undefined) {
+          room.message(result);
+        }
+      } else {
+        console.warn('No module found for command: ' + cmdname);
+      }
     }
+
+    //if(data.user === 'saneki' && data.message === '!time') {
+    //  room.message('Current time: ' + (new Date()).toString());
+    //}
 
   }).onUserJoin(function(snapshot) {
     var data = snapshot.val();
