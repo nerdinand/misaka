@@ -4,6 +4,7 @@ var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Command = require(path.join(__dirname, '..', 'lib', 'command'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
+var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 
 var Misaka = function() {
   this.initArgs();
@@ -23,6 +24,9 @@ var Misaka = function() {
   this.cmdproc = new CommandProcessor();
   this.commands = {};
   this.initModules();
+
+  // Message queues for rooms
+  this.queues = {};
 
   // argv overrides config
   if(this.argv.room) this.config.room = this.argv.room;
@@ -134,17 +138,48 @@ Misaka.prototype.loadModule = function(Module) {
   });
 };
 
+/**
+ * Send a message, which really just pushes the message to
+ * the room's message queue.
+ * @param roomname Name of room to send message to
+ * @param message Message to send
+ */
+Misaka.prototype.send = function(roomname, message) {
+  var queue = this.queues[roomname];
+  if(queue) {
+    queue.push(message);
+  } else {
+    console.warn('Cannot push message to non-existant queue: %s', roomname);
+  }
+};
+
+/**
+ * Initialize the message queue for a given room.
+ * @param room Room the message queue is for
+ */
+Misaka.prototype.initMessageQueue = function(room) {
+  var queue = new MessageQueue({
+    send: Picarto.Room.prototype.message.bind(room),
+    wait: 1000
+  });
+
+  this.queues[room.name] = queue;
+};
+
 Misaka.prototype.initRoom = function(room) {
   var misaka = this;
+
+  // Initialize the message queue for this room
+  this.initMessageQueue(room);
 
   room.onMessage(function(snapshot) {
     var data = snapshot.val();
     console.log(data.user + ': ' + data.message);
 
     // Pretend this is a queue for now...
-    var pseudoqueue = {
-      push: Picarto.Room.prototype.message.bind(room)
-    };
+    //var pseudoqueue = {
+    //  push: Picarto.Room.prototype.message.bind(room)
+    //};
 
     // Check if command
     if(misaka.cmdproc.isCommand(data.user, data.message)) {
@@ -152,11 +187,15 @@ Misaka.prototype.initRoom = function(room) {
 
       var command = misaka.commands[cmdname];
       if(command) {
-        // For now, result is message to say in chat
-        result = command.execute(data.message, pseudoqueue);
 
+        result = command.execute({
+          message: data.message,
+          send: Misaka.prototype.send.bind(misaka, room.name)
+        });
+
+        // If a result was returned, assume it's a message, enqueue
         if(result !== undefined) {
-          room.message(result);
+          misaka.send(room.name, result);
         }
       } else {
         console.warn('No module found for command: ' + cmdname);
