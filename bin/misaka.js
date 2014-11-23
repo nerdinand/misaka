@@ -105,6 +105,9 @@ Misaka.prototype.loadModule = function(Module) {
   var misaka = this;
   var module = new Module();
 
+  // Set the 'parent' field of the module instance
+  module.parent = this;
+
   if(!(module.info instanceof Object)) {
     return;
   }
