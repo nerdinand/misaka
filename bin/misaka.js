@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
+var Command = require(path.join(__dirname, '..', 'lib', 'command'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 
 var Misaka = function() {
@@ -101,15 +102,28 @@ Misaka.prototype.initModules = function() {
 };
 
 Misaka.prototype.loadModule = function(Module) {
+  var misaka = this;
   var module = new Module();
 
   if(!(module.info instanceof Object)) {
     return;
   }
 
-  if(module.info.command !== undefined) {
-    this.commands[module.info.command] = module;
-  }
+  //if(module.info.command !== undefined) {
+  //  this.commands[module.info.command] = module;
+  //}
+
+  var cmds = Command.getAllFromModule(module);
+  cmds.forEach(function(c) {
+    // Warn if overwriting an existing module by name
+    var existing = misaka.commands[c.name];
+    if(existing) {
+      console.warn('Overwriting command ' + existing.getFullName() + ' with ' + c.getFullName());
+    }
+
+    misaka.commands[c.name] = c;
+    console.log('Added command ' + c.getFullName());
+  });
 };
 
 Misaka.prototype.initRoom = function(room) {
@@ -123,10 +137,10 @@ Misaka.prototype.initRoom = function(room) {
     if(misaka.cmdproc.isCommand(data.user, data.message)) {
       var cmdname = misaka.cmdproc.getCommandName(data.message);
 
-      var module = misaka.commands[cmdname];
-      if(module) {
+      var command = misaka.commands[cmdname];
+      if(command) {
         // For now, result is message to say in chat
-        result = module.onCommand(data.message);
+        result = command.execute(data.message);
 
         if(result !== undefined) {
           room.message(result);
