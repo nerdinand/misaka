@@ -83,6 +83,11 @@ Misaka.prototype.initModules = function() {
 
   var list = fs.readdirSync(dir);
   list.forEach(function(file) {
+    // Only consider a module file if it matches specified pattern
+    if(!/^mod_.*\.js$/.test(file)) {
+      return;
+    }
+
     var fpath = path.join(dir, file);
 
     // Try to require the module
