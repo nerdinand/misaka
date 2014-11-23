@@ -136,6 +136,11 @@ Misaka.prototype.initRoom = function(room) {
     var data = snapshot.val();
     console.log(data.user + ': ' + data.message);
 
+    // Pretend this is a queue for now...
+    var pseudoqueue = {
+      push: Picarto.Room.prototype.message.bind(room)
+    };
+
     // Check if command
     if(misaka.cmdproc.isCommand(data.user, data.message)) {
       var cmdname = misaka.cmdproc.getCommandName(data.message);
@@ -143,7 +148,7 @@ Misaka.prototype.initRoom = function(room) {
       var command = misaka.commands[cmdname];
       if(command) {
         // For now, result is message to say in chat
-        result = command.execute(data.message);
+        result = command.execute(data.message, pseudoqueue);
 
         if(result !== undefined) {
           room.message(result);
