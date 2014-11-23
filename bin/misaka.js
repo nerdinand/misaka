@@ -5,6 +5,7 @@ var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Command = require(path.join(__dirname, '..', 'lib', 'command'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
+var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 
 var Misaka = function() {
   this.initArgs();
@@ -21,7 +22,9 @@ var Misaka = function() {
   }
 
   // For now, commands just an object: name -> module with onCommand
+  this.helper = new ModuleHelper();
   this.cmdproc = new CommandProcessor();
+  this.modules = {};
   this.commands = {};
   this.initModules();
 
@@ -80,7 +83,6 @@ Misaka.prototype.initConfig = function() {
 
 Misaka.prototype.initModules = function() {
   var misaka = this;
-  this.modules = [];
 
   var dir = path.join(__dirname, '..', 'lib', 'modules');
   var loaded = [];
@@ -106,13 +108,26 @@ Misaka.prototype.initModules = function() {
 
   // Load each module
   loaded.forEach(function(module) {
-    misaka.loadModule(module);
+    // Todo: somehow get filepath/filename from module
+    if(module instanceof Function) {
+      misaka.loadModule(module);
+    } else {
+      console.warn('exports of module is not a function, ignoring');
+    }
   });
 };
 
 Misaka.prototype.loadModule = function(Module) {
   var misaka = this;
+
   var module = new Module();
+  this.helper.wrapModule(module); // Wrap module instance with stuff
+
+  var existing = this.modules[module.info.name.toLowerCase()];
+  if(existing) {
+    console.warn('Overwriting existing module with name ' + module.info.name);
+  }
+  this.modules[module.info.name.toLowerCase()] = module;
 
   // Set the 'parent' field of the module instance
   module.parent = this;
@@ -121,12 +136,10 @@ Misaka.prototype.loadModule = function(Module) {
     return;
   }
 
-  //if(module.info.command !== undefined) {
-  //  this.commands[module.info.command] = module;
-  //}
-
   var cmds = Command.getAllFromModule(module);
   cmds.forEach(function(c) {
+    misaka.helper.wrapCommand(c);
+
     // Warn if overwriting an existing module by name
     var existing = misaka.commands[c.name];
     if(existing) {
@@ -166,6 +179,50 @@ Misaka.prototype.initMessageQueue = function(room) {
   this.queues[room.name] = queue;
 };
 
+/**
+ * Get the master user's name if we have one.
+ * @return master user's name, or undefined if none
+ */
+Misaka.prototype.getMasterName = function() {
+  return this.config.master;
+};
+
+/**
+ * Get a command by name.
+ * @param name Command name
+ * @return command instance if found, undefined if not found
+ */
+Misaka.prototype.getCommand = function(name) {
+  return this.commands[name.toLowerCase()];
+};
+
+/**
+ * Get a module by name.
+ * @param name Module name
+ * @return module instance if found, undefined if not found
+ */
+Misaka.prototype.getModule = function(name) {
+  return this.modules[name.toLowerCase()];
+};
+
+/**
+ * Check if a command is enabled.
+ * @param command Command instance or name as a string. If
+ *        a string is given, will return false if command
+ *        not found.
+ * @return true if command enabled, false if not enabled
+ *         (or command not found)
+ */
+Misaka.prototype.isCommandEnabled = function(command) {
+  if(command instanceof String) {
+    command = this.getCommand(command);
+    if(!command) return false; // Command not found, return false
+  }
+
+  // If command has a module, check if that's enabled too
+  return command.enabled && (command.module ? command.module.enabled : true);
+};
+
 Misaka.prototype.initRoom = function(room) {
   var misaka = this;
 
@@ -176,20 +233,27 @@ Misaka.prototype.initRoom = function(room) {
     var data = snapshot.val();
     console.log(data.user + ': ' + data.message);
 
-    // Pretend this is a queue for now...
-    //var pseudoqueue = {
-    //  push: Picarto.Room.prototype.message.bind(room)
-    //};
-
     // Check if command
     if(misaka.cmdproc.isCommand(data.user, data.message)) {
       var cmdname = misaka.cmdproc.getCommandName(data.message);
 
-      var command = misaka.commands[cmdname];
-      if(command) {
+      // Hardcoded check for now: Only master can use enable/disable
+      if(cmdname.toLowerCase() === 'enable' || cmdname.toLowerCase() === 'disable') {
+        if(data.user !== misaka.getMasterName()) {
+          console.warn('Non-master trying to use enable/disable');
+          return;
+        }
+      }
+
+      var command = misaka.getCommand(cmdname);
+      if(command && misaka.isCommandEnabled(command)) {
 
         result = command.execute({
-          message: data.message,
+          helper: misaka.helper, // Module helper
+          message: data.message, // Full message
+          parent: misaka,
+          parsed: misaka.helper.parseCommandMessage(data.message),
+          room: room, // Room this is from
           send: Misaka.prototype.send.bind(misaka, room.name)
         });
 
@@ -197,8 +261,10 @@ Misaka.prototype.initRoom = function(room) {
         if(result !== undefined) {
           misaka.send(room.name, result);
         }
+      } else if(!command) {
+        console.warn('No command found: ' + cmdname);
       } else {
-        console.warn('No module found for command: ' + cmdname);
+        console.warn('Command (or parent module) is disabled: ' + cmdname);
       }
     }
 
