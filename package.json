@@ -1,6 +1,11 @@
 {
   "name": "misaka",
   "version": "0.0.0",
+  "keywords": ["bot", "chat", "misaka", "picarto"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saneki/misaka.git"
+  },
   "scripts": {
     "start": "node ./bin/misaka.js",
     "test": "node ./bin/picarto-test.js"
