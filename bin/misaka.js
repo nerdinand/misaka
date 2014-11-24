@@ -230,16 +230,18 @@ Misaka.prototype.initRoom = function(room) {
   this.initMessageQueue(room);
 
   room.onMessage(function(snapshot) {
-    var data = snapshot.val();
-    console.log(data.user + ': ' + data.message);
+    var username = snapshot.username,
+        message = snapshot.message;
+
+    console.log(username + ': ' + message);
 
     // Check if command
-    if(misaka.cmdproc.isCommand(data.user, data.message)) {
-      var cmdname = misaka.cmdproc.getCommandName(data.message);
+    if(misaka.cmdproc.isCommand(username, message)) {
+      var cmdname = misaka.cmdproc.getCommandName(message);
 
       // Hardcoded check for now: Only master can use enable/disable
       if(cmdname.toLowerCase() === 'enable' || cmdname.toLowerCase() === 'disable') {
-        if(data.user !== misaka.getMasterName()) {
+        if(username !== misaka.getMasterName()) {
           console.warn('Non-master trying to use enable/disable');
           return;
         }
@@ -250,9 +252,9 @@ Misaka.prototype.initRoom = function(room) {
 
         result = command.execute({
           helper: misaka.helper, // Module helper
-          message: data.message, // Full message
+          message: message, // Full message
           parent: misaka,
-          parsed: misaka.helper.parseCommandMessage(data.message),
+          parsed: misaka.helper.parseCommandMessage(message),
           room: room, // Room this is from
           send: Misaka.prototype.send.bind(misaka, room.name)
         });
@@ -268,16 +270,21 @@ Misaka.prototype.initRoom = function(room) {
       }
     }
 
-    //if(data.user === 'saneki' && data.message === '!time') {
-    //  room.message('Current time: ' + (new Date()).toString());
-    //}
-
   }).onUserJoin(function(snapshot) {
-    var data = snapshot.val();
-    console.log('*** ' + data.chatUsername + ' has joined the room ***');
+    //var data = snapshot.val();
+    console.log('*** ' + snapshot.username + ' has joined the room ***');
   }).onUserLeave(function(snapshot) {
-    var data = snapshot.val();
-    console.log('*** ' + data.chatUsername + ' has left the room ***');
+    //var data = snapshot.val();
+    console.log('*** ' + snapshot.username + ' has left the room ***');
+  }).onHistory(function(history) {
+    // Not a snapshot for now
+    // This may not order correctly?
+    console.log('--- History ---');
+    for(var key in history) {
+      var message = history[key];
+      console.log(message.user + ': ' + message.message);
+    }
+    console.log('--- End History ---');
   });
 
   room.connect();
