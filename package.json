@@ -11,9 +11,11 @@
     "test": "node ./bin/picarto-test.js"
   },
   "dependencies": {
-    "execSync": "~1.0.2",
     "firebase": "2.0.3",
     "minimist": "~1.1.0",
     "nodemw": "~0.3.16"
+  },
+  "optionalDependencies": {
+    "execSync": "~1.0.2"
   }
 }
