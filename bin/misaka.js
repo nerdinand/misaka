@@ -233,7 +233,11 @@ Misaka.prototype.initRoom = function(room) {
     var username = snapshot.username,
         message = snapshot.message;
 
-    console.log(username + ': ' + message);
+    if(snapshot.whisper === undefined) {
+      console.log(username + ': ' + message);
+    } else {
+      console.log(username + ' -> ' + snapshot.whisper + ': ' + message);
+    }
 
     // Check if command
     if(misaka.cmdproc.isCommand(username, message)) {
@@ -285,6 +289,8 @@ Misaka.prototype.initRoom = function(room) {
       console.log(message.user + ': ' + message.message);
     }
     console.log('--- End History ---');
+  }).onWhisper(function(snapshot) {
+    console.log('*whisper* ' + snapshot.from + ': ' + snapshot.message);
   });
 
   room.connect();
