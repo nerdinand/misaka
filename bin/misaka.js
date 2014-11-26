@@ -164,6 +164,24 @@ Misaka.prototype.isCommandEnabled = function(command) {
   return command.isEnabled(); // && (command.module ? command.module.enabled : true);
 };
 
+/**
+ * Fire the 'join' event for all modules. Should probably
+ * move this later.
+ * @param room Joined room
+ */
+Misaka.prototype.fireRoomJoin = function(room) {
+  var misaka = this;
+  this.modules.forEach(function(module) {
+    var callback = module.getCallback('join');
+    if(callback) {
+      callback({
+        room: room,
+        send: Misaka.prototype.send.bind(misaka, room.name)
+      });
+    }
+  });
+};
+
 Misaka.prototype.initRoom = function(room) {
   var misaka = this;
 
@@ -224,6 +242,9 @@ Misaka.prototype.initRoom = function(room) {
       console.log(message.user + ': ' + message.message);
     }
     console.log('--- End History ---');
+
+    // Hacky for now.. Consider this point as "room joined"
+    misaka.fireRoomJoin(room);
   }).onWhisper(function(snapshot) {
     console.log('*whisper* ' + snapshot.from + ': ' + snapshot.message);
   });
