@@ -82,6 +82,14 @@ Misaka.prototype.initConfig = function() {
 
 Misaka.prototype.initModules = function() {
   this.modules.loadFromDirectory();
+
+  // Load from lib/modules/private if it exists
+  var privPath = path.join(__dirname, '..', 'lib', 'modules', 'private'),
+      stat = fs.statSync(privPath);
+
+  if(stat && stat.isDirectory()) {
+    this.modules.loadFromDirectory(privPath);
+  }
 };
 
 /**
@@ -204,7 +212,7 @@ Misaka.prototype.initRoom = function(room) {
     }
 
   }).onUserJoin(function(snapshot) {
-    console.log('*** ' + snapshot.username + ' has joined the room ***');
+    console.log('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
   }).onUserLeave(function(snapshot) {
     console.log('*** ' + snapshot.username + ' has left the room ***');
   }).onHistory(function(history) {
