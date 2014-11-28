@@ -6,6 +6,7 @@ var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_proces
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'));
+var logger = require(path.join(__dirname, '..', 'lib', 'logger'));
 
 var Misaka = function() {
   this.initArgs();
@@ -20,6 +21,8 @@ var Misaka = function() {
     console.error('Couldn\'t read config file, aborting');
     process.exit(1);
   }
+
+  this.initLogger();
 
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
@@ -89,6 +92,18 @@ Misaka.prototype.initModules = function() {
 
   if(stat && stat.isDirectory()) {
     this.modules.loadFromDirectory(privPath);
+  }
+};
+
+/**
+ * Initialize the singleton logger.
+ */
+Misaka.prototype.initLogger = function() {
+  // Set logging config stuff
+  if(this.config.logging) {
+    if(this.config.logging.detection !== undefined) {
+      logger.enableDetection(!!this.config.logging.detection);
+    }
   }
 };
 

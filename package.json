@@ -15,7 +15,8 @@
     "firebase": "2.0.3",
     "minimist": "~1.1.0",
     "nodemw": "~0.3.16",
-    "request": "~2.48.0"
+    "request": "~2.48.0",
+    "winston": "~0.8.3"
   },
   "optionalDependencies": {
     "execSync": "~1.0.2"
