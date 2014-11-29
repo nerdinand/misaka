@@ -209,11 +209,20 @@ Misaka.prototype.isCommandEnabled = function(command) {
  * @param room Joined room
  */
 Misaka.prototype.fireRoomJoin = function(room) {
-  var misaka = this;
+  var misaka = this, config = this.config.modules;
+
   this.modules.forEach(function(module) {
+    // Get the config for this module
+    var config = {};
+    if(misaka.config.modules
+    && misaka.config.modules[module.name()]) {
+      config = misaka.config.modules[module.name()];
+    }
+
     var callback = module.getCallback('join');
     if(callback) {
       callback({
+        config: config,
         room: room,
         send: Misaka.prototype.send.bind(misaka, room.name)
       });
