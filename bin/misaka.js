@@ -52,6 +52,8 @@ Misaka.prototype.initArgs = function() {
 };
 
 Misaka.prototype.initClient = function() {
+  var misaka = this;
+
   if(this.config === undefined) {
     return new Error('Cannot initialize client without config');
   }
@@ -63,8 +65,15 @@ Misaka.prototype.initClient = function() {
     password: this.config.password
   });
 
+  this.client.onAuth(function(authData) {
+    if(authData) { // Re-authd
+      misaka.setConnected(true);
+    } else { // Un-authd
+      misaka.setConnected(false);
+    }
+  });
+
   // Connect
-  var misaka = this;
   this.client.initFirebase(function(err, authData) {
     // Join room
     var room = misaka.client.join(misaka.config.room);
@@ -104,6 +113,20 @@ Misaka.prototype.initLogger = function() {
   if(this.config.logging) {
     if(this.config.logging.detection !== undefined) {
       logger.enableDetection(!!this.config.logging.detection);
+    }
+  }
+};
+
+/**
+ * Set all queues to connected or disconnected.
+ * @param c Connected state, true if connected or false
+ *          if disconnected
+ */
+Misaka.prototype.setConnected = function(c) {
+  for(var key in this.queues) {
+    var queue = this.queues[key];
+    if(queue) {
+      queue.setConnected(c);
     }
   }
 };
