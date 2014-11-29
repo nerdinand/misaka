@@ -59,7 +59,8 @@ Misaka.prototype.initClient = function() {
   this.client = new Picarto.Client({
     authkey: this.config.authkey,
     color: this.config.color,
-    username: this.config.username
+    username: this.config.username,
+    password: this.config.password
   });
 
   // Connect
