@@ -21,6 +21,7 @@
     "winston": "~0.8.3"
   },
   "optionalDependencies": {
-    "execSync": "~1.0.2"
+    "execSync": "~1.0.2",
+    "plugapi": "git://github.com/plugCubed/plugAPI.git#develop"
   }
 }
