@@ -65,12 +65,18 @@ Misaka.prototype.initClient = function() {
     password: this.config.password
   });
 
+  // Listen for auth events
   this.client.onAuth(function(authData) {
     if(authData) { // Re-authd
       misaka.setConnected(true);
     } else { // Un-authd
       misaka.setConnected(false);
     }
+  });
+
+  // Listen for global messages
+  this.client.onGlobalMessage(function(s) {
+    console.log('*** Global Message *** ' + s.message);
   });
 
   // Connect
@@ -295,6 +301,8 @@ Misaka.prototype.initRoom = function(room) {
     misaka.fireRoomJoin(room);
   }).onWhisper(function(snapshot) {
     console.log('*whisper* ' + snapshot.from + ': ' + snapshot.message);
+  }).onClear(function() {
+    console.log('*** Room chat has been cleared by admin ***');
   });
 
   room.connect();
