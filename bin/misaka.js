@@ -80,11 +80,14 @@ Misaka.prototype.initClient = function() {
   });
 
   // Connect
-  this.client.initFirebase(function(err, authData) {
-    // Join room
-    var room = misaka.client.join(misaka.config.room);
-
-    misaka.initRoom(room);
+  this.client.connect(function(err, authData) {
+    if(!err) {
+      // Join room
+      var room = misaka.client.join(misaka.config.room);
+      misaka.initRoom(room);
+    } else {
+      console.warn('Error connecting:', err);
+    }
   });
 };
 
