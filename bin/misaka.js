@@ -239,6 +239,15 @@ Misaka.prototype.fireRoomJoin = function(room) {
   });
 };
 
+/**
+ * Print something to console with a date string.
+ * @param s String to print
+ */
+Misaka.prototype.print = function(s) {
+  var date = (new Date()).toTimeString().split(' ')[0];
+  console.log('[' + date + '] ' + s);
+};
+
 Misaka.prototype.initRoom = function(room) {
   var misaka = this;
 
@@ -250,9 +259,9 @@ Misaka.prototype.initRoom = function(room) {
         message = snapshot.message;
 
     if(snapshot.whisper === undefined) {
-      console.log(username + ': ' + message);
+      misaka.print(username + ': ' + message);
     } else {
-      console.log(username + ' -> ' + snapshot.whisper + ': ' + message);
+      misaka.print(username + ' -> ' + snapshot.whisper + ': ' + message);
     }
 
     // Check if command
@@ -262,7 +271,7 @@ Misaka.prototype.initRoom = function(room) {
       var command = misaka.getCommand(cmdname);
       if(command && command.isEnabled() && command.isMasterOnly()
         && username !== misaka.getMasterName()) {
-        console.warn('Non-master trying to use a master-only command `' + command.name() + '`');
+        misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
       }
       else if(command && command.isEnabled()) {
 
@@ -280,16 +289,16 @@ Misaka.prototype.initRoom = function(room) {
           misaka.send(room.name, result);
         }
       } else if(!command) {
-        console.warn('No command found: ' + cmdname);
+        misaka.print('No command found: ' + cmdname);
       } else if(!command.isEnabled()) {
-        console.warn('Command (or parent module) is disabled: ' + cmdname);
+        misaka.print('Command (or parent module) is disabled: ' + cmdname);
       }
     }
 
   }).onUserJoin(function(snapshot) {
-    console.log('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
+    misaka.print('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
   }).onUserLeave(function(snapshot) {
-    console.log('*** ' + snapshot.username + ' has left the room ***');
+    misaka.print('*** ' + snapshot.username + ' has left the room ***');
   }).onHistory(function(history) {
     // Not a snapshot for now
     // This may not order correctly?
@@ -303,9 +312,9 @@ Misaka.prototype.initRoom = function(room) {
     // Hacky for now.. Consider this point as "room joined"
     misaka.fireRoomJoin(room);
   }).onWhisper(function(snapshot) {
-    console.log('*whisper* ' + snapshot.from + ': ' + snapshot.message);
+    misaka.print('*whisper* ' + snapshot.from + ': ' + snapshot.message);
   }).onClear(function() {
-    console.log('*** Room chat has been cleared by admin ***');
+    misaka.print('*** Room chat has been cleared by admin ***');
   });
 
   room.connect();
