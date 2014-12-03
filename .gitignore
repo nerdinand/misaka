@@ -1,7 +1,7 @@
 node_modules/
 
 config/*
-!config/sample.json
+!config/samples/
 
 lib/modules/private/*
 !lib/modules/private/.gitkeep

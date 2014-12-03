@@ -1,0 +1,6 @@
+{
+  "description": "Sample config file for authenticating with username and authkey",
+
+  "username": "User123",
+  "authkey": "SomeAuthkeyHere"
+}
