@@ -34,9 +34,9 @@ var Misaka = function() {
   this.queues = {};
 
   // argv overrides config
-  if(this.argv.room) this.config.room = this.argv.room;
+  if(this.argv.room) this.config.setRoom(this.argv.room);
 
-  if(this.config.room === undefined) {
+  if(this.config.getRooms().length === 0) {
     console.error('No room to join specified, aborting');
     process.exit(1);
   }
@@ -59,10 +59,10 @@ Misaka.prototype.initClient = function() {
   }
 
   this.client = new Picarto.Client({
-    authkey: this.config.authkey,
-    color: this.config.color,
-    username: this.config.username,
-    password: this.config.password
+    authkey: this.config.getAuthkey(),
+    color: this.config.getColor(),
+    username: this.config.getUsername(),
+    password: this.config.getPassword()
   });
 
   // Listen for auth events
@@ -83,7 +83,7 @@ Misaka.prototype.initClient = function() {
   this.client.connect(function(err, authData) {
     if(!err) {
       // Join room
-      var room = misaka.client.join(misaka.config.room);
+      var room = misaka.client.join(misaka.config.getRooms()[0]);
       misaka.initRoom(room);
     } else {
       console.warn('Error connecting:', err);
@@ -173,7 +173,7 @@ Misaka.prototype.initMessageQueue = function(room) {
  * @return master user's name, or undefined if none
  */
 Misaka.prototype.getMasterName = function() {
-  return this.config.master;
+  return this.config.getMaster();
 };
 
 /**
@@ -218,15 +218,18 @@ Misaka.prototype.isCommandEnabled = function(command) {
  * @param room Joined room
  */
 Misaka.prototype.fireRoomJoin = function(room) {
-  var misaka = this, config = this.config.modules;
+  var misaka = this;
 
   this.modules.forEach(function(module) {
     // Get the config for this module
-    var config = {};
-    if(misaka.config.modules
-    && misaka.config.modules[module.name()]) {
-      config = misaka.config.modules[module.name()];
-    }
+    //var config = {};
+    //if(misaka.config.modules
+    //&& misaka.config.modules[module.name()]) {
+    //  config = misaka.config.modules[module.name()];
+    //}
+
+	var config = misaka.config.getModuleConfig(module.name());
+	if(!config) config = {};
 
     var callback = module.getCallback('join');
     if(callback) {
