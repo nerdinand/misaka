@@ -22,6 +22,20 @@ At the very least, a username and an authkey need to be defined.
 The username is the username of the bot's account, and the authkey
 needs to be extracted from the HTML.
 
+Config fields
+-------------
+
+Name       | Description
+---------- | ----------------------------------------------------------------------
+authkey    | Used for authentication, not necessary if using password
+color      | Chat name color
+master     | Username of master account
+modules    | Object with config objects for separate modules, mapped by module name
+password   | Picarto account password, not necessary if using authkey
+username   | Picarto account username
+
+See `config/samples` for some sample config files.
+
 Getting the authkey
 -------------------
 
