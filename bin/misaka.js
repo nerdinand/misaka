@@ -255,6 +255,7 @@ Misaka.prototype.initRoom = function(room) {
   // Initialize the message queue for this room
   this.initMessageQueue(room);
 
+  // Need to clean this up one day...
   room.onMessage(function(snapshot) {
     var username = snapshot.username,
         message = snapshot.message;
@@ -273,8 +274,10 @@ Misaka.prototype.initRoom = function(room) {
       if(command && command.isEnabled() && command.isMasterOnly()
         && username !== misaka.getMasterName()) {
         misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
-      }
-      else if(command && command.isEnabled()) {
+      } else if(!command.canBeUsed(username)) {
+        misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
+      } else if(command && command.isEnabled()) {
+        command.used(username);
 
         result = command.execute({
           helper: misaka.helper, // Module helper
