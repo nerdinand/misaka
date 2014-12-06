@@ -177,6 +177,14 @@ Misaka.prototype.getMasterName = function() {
 };
 
 /**
+ * Get the module manager.
+ * @return Module manager
+ */
+Misaka.prototype.getModuleManager = function() {
+  return this.modules;
+};
+
+/**
  * Get a command by name.
  * @param name Command name
  * @return command instance if found, undefined if not found
@@ -221,24 +229,14 @@ Misaka.prototype.fireRoomJoin = function(room) {
   var misaka = this;
 
   this.modules.forEach(function(module) {
-    // Get the config for this module
-    //var config = {};
-    //if(misaka.config.modules
-    //&& misaka.config.modules[module.name()]) {
-    //  config = misaka.config.modules[module.name()];
-    //}
+    var config = misaka.config.getModuleConfig(module.name());
+    if(!config) config = {};
 
-	var config = misaka.config.getModuleConfig(module.name());
-	if(!config) config = {};
-
-    var callback = module.getCallback('join');
-    if(callback) {
-      callback({
-        config: config,
-        room: room,
-        send: Misaka.prototype.send.bind(misaka, room.name)
-      });
-    }
+    module.emit('join', {
+      config: config,
+      room: room,
+      send: Misaka.prototype.send.bind(misaka, room.name)
+    });
   });
 };
 
