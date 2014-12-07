@@ -274,7 +274,7 @@ Misaka.prototype.initRoom = function(room) {
       if(command && command.isEnabled() && command.isMasterOnly()
         && username !== misaka.getMasterName()) {
         misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
-      } else if(!command.canBeUsed(username)) {
+      } else if(command && !command.canBeUsed(username)) {
         misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
       } else if(command && command.isEnabled()) {
         command.used(username);
