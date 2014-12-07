@@ -169,6 +169,14 @@ Misaka.prototype.initMessageQueue = function(room) {
 };
 
 /**
+ * Get the config object.
+ * @return config object
+ */
+Misaka.prototype.getConfig = function() {
+  return this.config;
+};
+
+/**
  * Get the master user's name if we have one.
  * @return master user's name, or undefined if none
  */
@@ -267,7 +275,8 @@ Misaka.prototype.initRoom = function(room) {
     }
 
     // Check if command
-    if(misaka.cmdproc.isCommand(username, message)) {
+    if(misaka.cmdproc.isCommand(username, message)
+        && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
       var cmdname = misaka.cmdproc.getCommandName(message);
 
       var command = misaka.getCommand(cmdname);
