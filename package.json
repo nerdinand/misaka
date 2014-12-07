@@ -23,6 +23,6 @@
   },
   "optionalDependencies": {
     "execSync": "~1.0.2",
-    "plugapi": "git://github.com/plugCubed/plugAPI.git#develop"
+    "plugapi": "git://github.com/saneki/plugAPI.git#async_login"
   }
 }
