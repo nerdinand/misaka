@@ -17,6 +17,7 @@
     "minimist": "~1.1.0",
     "nodemw": "~0.3.16",
     "request": "~2.48.0",
+    "socket.io-client": "~1.2.1",
     "tough-cookie": "~0.12.1",
     "underscore": "~1.7.0",
     "winston": "~0.8.3"
