@@ -78,30 +78,56 @@ Misaka.prototype.initBot = function() {
  * @param client Client
  */
 Misaka.prototype.setupEvents = function(client) {
-  var socket = client.getSocket();
+  var misaka = this,
+      socket = client.getSocket();
 
-  console.log(['V7', 'connected?']);
+  this.initMessageQueue(client);
+
+  console.log('Connected');
 
   socket.on('disconnect', function() {
-    console.log(['V7', 'disconnect']);
+    console.log('Disconnected');
   });
 
   socket.on('userMsg', function(data) {
     if(!data.history) {
-      console.log(['V7', data.username + ': ' + data.msg]);
+      //console.log(['V7', data.username + ': ' + data.msg]);
+
+      var username = data.username,
+          message = data.msg;
+
+      // Whispers in a different event now
+      //if(snapshot.whisper === undefined) {
+      //  misaka.print(username + ': ' + message);
+      //} else {
+      //  misaka.print(username + ' -> ' + snapshot.whisper + ': ' + message);
+      //}
+
+      misaka.print(username + ': ' + message);
+
+      // Check if command
+      if(misaka.cmdproc.isCommand(username, message)
+          && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
+        misaka.processCommand(data);
+      }
     }
   });
 
+  socket.on('clearChat', function() {
+    misaka.print('*** Room chat has been cleared by admin ***');
+  });
+
   client.on('history', function(history) {
-    console.log(['V7', '--- Begin History ---']);
+    console.log('--- Begin History ---');
     history.forEach(function(data) {
-      console.log(['V7', data.username + ': ' + data.msg]);
+      console.log(data.username + ': ' + data.msg);
     });
-    console.log(['V7', '--- End History ---']);
+    console.log('--- End History ---');
   });
 
   // Setup userlist events
   var userList = client.getUserList();
+
   userList.on('initial', function(users) {
     //console.log(['V7', 'UserList', 'initial', users]);
 
@@ -112,19 +138,63 @@ Misaka.prototype.setupEvents = function(client) {
 
     console.log('Users in room: ' + usernames.join(', '));
   });
+
   userList.on('userAdded', function(user) {
     //console.log(['V7', 'UserList', 'userAdded', user]);
     console.log('*** ' + user.username + ' has joined the room ***');
   });
+
   userList.on('userChanged', function(diff) {
     //console.log(['V7', 'UserList', 'userChanged', diff[0], diff[1]]);
     console.log('*** ' + diff[0].username + ' has changed in some way ***');
   });
+
   userList.on('userRemoved', function(user) {
     //console.log(['V7', 'UserList', 'userRemoved', user]);
     console.log('*** ' + user.username + ' has left the room ***');
   });
+};
 
+/**
+ * Process a command message given a message object.
+ * @param data Message object received from userMsg event.
+ */
+Misaka.prototype.processCommand = function(data) {
+  var misaka = this,
+      username = data.username,
+      message = data.msg,
+      cmdname = misaka.cmdproc.getCommandName(message),
+      command = misaka.getCommand(cmdname),
+      roomname = this.config.getRooms()[0];
+
+  if(command && command.isEnabled() && command.isMasterOnly()
+    && username !== misaka.getMasterName()) {
+    misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
+  } else if(command && !command.canBeUsed(username)) {
+    misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
+  } else if(command && command.isEnabled()) {
+    console.log('gonna try command stuff');
+    command.used(username);
+
+    result = command.execute({
+      helper: misaka.helper, // Module helper
+      message: message, // Full message
+      parent: misaka,
+      parsed: misaka.helper.parseCommandMessage(message),
+      //room: room, // Room this is from
+      roomName: roomname,
+      send: Misaka.prototype.send.bind(misaka, roomname)
+    });
+
+    // If a result was returned, assume it's a message, enqueue
+    if(result !== undefined) {
+      misaka.send(roomname, result);
+    }
+  } else if(!command) {
+    misaka.print('No command found: ' + cmdname);
+  } else if(!command.isEnabled()) {
+    misaka.print('Command (or parent module) is disabled: ' + cmdname);
+  }
 };
 
 /**
@@ -193,15 +263,16 @@ Misaka.prototype.send = function(roomname, message) {
 
 /**
  * Initialize the message queue for a given room.
- * @param room Room the message queue is for
+ * @param client Client the message queue is for
  */
-Misaka.prototype.initMessageQueue = function(room) {
+Misaka.prototype.initMessageQueue = function(client) {
   var queue = new MessageQueue({
-    send: Picarto.Room.prototype.message.bind(room),
+    send: Picarto.ClientV7.prototype.sendMessage.bind(client),
     wait: 1000
   });
 
-  this.queues[room.name] = queue;
+  var roomname = this.config.getRooms()[0];
+  this.queues[roomname] = queue;
 };
 
 /**
@@ -269,6 +340,7 @@ Misaka.prototype.isCommandEnabled = function(command) {
  * move this later.
  * @param room Joined room
  */
+// DON'T CARE ABOUT THIS FOR NOW
 Misaka.prototype.fireRoomJoin = function(room) {
   var misaka = this;
 
@@ -278,8 +350,8 @@ Misaka.prototype.fireRoomJoin = function(room) {
 
     module.emit('join', {
       config: config,
-      room: room,
-      send: Misaka.prototype.send.bind(misaka, room.name)
+      room: roomname,
+      send: Misaka.prototype.send.bind(misaka, roomname)
     });
   });
 };
