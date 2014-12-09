@@ -196,6 +196,14 @@ Misaka.prototype.initMessageQueue = function(room) {
 };
 
 /**
+ * Chat version Misaka is for.
+ * @return chat version as number
+ */
+Misaka.prototype.getChatVersion = function() {
+  return 6;
+};
+
+/**
  * Get the config object.
  * @return config object
  */

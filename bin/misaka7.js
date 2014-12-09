@@ -28,7 +28,7 @@ var Misaka = function() {
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
   this.cmdproc = new CommandProcessor();
-  this.modules = new ModuleManager();
+  this.modules = new ModuleManager({}, 7);
   this.initModules();
 
   // Message queues for rooms
@@ -273,6 +273,22 @@ Misaka.prototype.initMessageQueue = function(client) {
 
   var roomname = this.config.getRooms()[0];
   this.queues[roomname] = queue;
+};
+
+/**
+ * Get the bot instance.
+ * @return bot instance
+ */
+Misaka.prototype.getBot = function() {
+  return this.bot;
+};
+
+/**
+ * Chat version Misaka is for.
+ * @return chat version as number
+ */
+Misaka.prototype.getChatVersion = function() {
+  return 7;
 };
 
 /**
