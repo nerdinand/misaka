@@ -173,7 +173,6 @@ Misaka.prototype.processCommand = function(data) {
   } else if(command && !command.canBeUsed(username)) {
     misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
   } else if(command && command.isEnabled()) {
-    console.log('gonna try command stuff');
     command.used(username);
 
     result = command.execute({
@@ -181,8 +180,8 @@ Misaka.prototype.processCommand = function(data) {
       message: message, // Full message
       parent: misaka,
       parsed: misaka.helper.parseCommandMessage(message),
-      //room: room, // Room this is from
-      roomName: roomname,
+      room: { name: roomname }, // Backwards compatibility for modules
+      roomname: roomname,
       send: Misaka.prototype.send.bind(misaka, roomname)
     });
 
