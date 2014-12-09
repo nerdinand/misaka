@@ -60,7 +60,8 @@ Misaka.prototype.initBot = function() {
       bot = this.bot = new Bot({
     username: this.config.getUsername(),
     password: this.config.getPassword(),
-    room: this.config.getRooms()[0]
+    room: this.config.getRooms()[0],
+    unescape: true
   });
 
   bot.connect(function(error, client) {
