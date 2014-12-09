@@ -89,6 +89,32 @@ Misaka.prototype.setupEvents = function(client) {
   socket.on('userMsg', function(data) {
     console.log(['V7', data.username + ': ' + data.msg]);
   });
+
+  // Setup userlist events
+  var userList = client.getUserList();
+  userList.on('initial', function(users) {
+    //console.log(['V7', 'UserList', 'initial', users]);
+
+    var usernames = [];
+    users.forEach(function(user) {
+      usernames.push(user.username);
+    });
+
+    console.log('Users in room: ' + usernames.join(', '));
+  });
+  userList.on('userAdded', function(user) {
+    //console.log(['V7', 'UserList', 'userAdded', user]);
+    console.log('*** ' + user.username + ' has joined the room ***');
+  });
+  userList.on('userChanged', function(diff) {
+    //console.log(['V7', 'UserList', 'userChanged', diff[0], diff[1]]);
+    console.log('*** ' + diff[0].username + ' has changed in some way ***');
+  });
+  userList.on('userRemoved', function(user) {
+    //console.log(['V7', 'UserList', 'userRemoved', user]);
+    console.log('*** ' + user.username + ' has left the room ***');
+  });
+
 };
 
 /**
