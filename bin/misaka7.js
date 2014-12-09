@@ -87,7 +87,17 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   socket.on('userMsg', function(data) {
-    console.log(['V7', data.username + ': ' + data.msg]);
+    if(!data.history) {
+      console.log(['V7', data.username + ': ' + data.msg]);
+    }
+  });
+
+  client.on('history', function(history) {
+    console.log(['V7', '--- Begin History ---']);
+    history.forEach(function(data) {
+      console.log(['V7', data.username + ': ' + data.msg]);
+    });
+    console.log(['V7', '--- End History ---']);
   });
 
   // Setup userlist events
