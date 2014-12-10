@@ -83,6 +83,8 @@ Misaka.prototype.setupEvents = function(client) {
       socket = client.getSocket();
 
   this.initMessageQueue(client);
+  // Consider room joined
+  this.fireRoomJoin(this.config.getRooms()[0]);
 
   console.log('Connected');
 
@@ -352,12 +354,10 @@ Misaka.prototype.isCommandEnabled = function(command) {
 };
 
 /**
- * Fire the 'join' event for all modules. Should probably
- * move this later.
- * @param room Joined room
+ * Fire the 'join' event for all modules. Should probably move this later.
+ * @param room Room name of joined room
  */
-// DON'T CARE ABOUT THIS FOR NOW
-Misaka.prototype.fireRoomJoin = function(room) {
+Misaka.prototype.fireRoomJoin = function(roomname) {
   var misaka = this;
 
   this.modules.forEach(function(module) {
@@ -366,7 +366,7 @@ Misaka.prototype.fireRoomJoin = function(room) {
 
     module.emit('join', {
       config: config,
-      room: roomname,
+      room: { name: roomname },
       send: Misaka.prototype.send.bind(misaka, roomname)
     });
   });
