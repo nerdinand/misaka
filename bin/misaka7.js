@@ -46,10 +46,10 @@ var Misaka = function() {
 };
 
 Misaka.prototype.initArgs = function() {
-  this.argv = require('minimist')(process.argv.slice(2));
+  var argv = this.argv = require('minimist')(process.argv.slice(2));
 
-  if(this.argv.h) this.argv.help = true;
-  if(this.argv.r) this.argv.room = this.argv.r;
+  if(argv.h) argv.help = true;
+  if(argv.r) argv.room = argv.r;
 };
 
 /**
@@ -233,6 +233,10 @@ Misaka.prototype.initLogger = function() {
     if(this.config.logging.detection !== undefined) {
       logger.enableDetection(!!this.config.logging.detection);
     }
+  }
+
+  if(this.argv.debug) {
+    logger.setLevel('debug');
   }
 };
 
@@ -467,6 +471,7 @@ Misaka.prototype.printHelp = function() {
   console.log('options:');
   console.log('  -h, --help    print this help message');
   console.log('  -r, --room    room to join');
+  console.log('  --debug       enable debug logger');
 };
 
 var misaka = new Misaka();
