@@ -1,14 +1,24 @@
 {
   "name": "misaka",
   "version": "0.0.0",
-  "keywords": ["bot", "chat", "misaka", "picarto"],
+  "description": "Chat client and bot for picarto.tv",
+  "keywords": ["bot", "chat", "client", "misaka", "picarto", "picarto.tv"],
   "repository": {
     "type": "git",
     "url": "https://github.com/saneki/misaka.git"
   },
+  "main": "./lib/main.js",
+  "directories": {
+    "bin": "./bin",
+    "lib": "./lib"
+  },
+  "bin": {
+    "misaka":  "./bin/global/misaka.js",
+    "misaka7": "./bin/global/misaka7.js",
+    "picarto": "./bin/global/picarto.js"
+  },
   "scripts": {
-    "start": "node ./bin/misaka.js",
-    "test": "node ./bin/picarto-test.js"
+    "start": "node ./bin/misaka.js"
   },
   "dependencies": {
     "async": "~0.9.0",
