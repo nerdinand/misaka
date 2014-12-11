@@ -60,6 +60,7 @@ Misaka.prototype.initBot = function() {
       bot = this.bot = new Bot({
     username: this.config.getUsername(),
     password: this.config.getPassword(),
+    color: this.config.getColor(),
     room: this.config.getRooms()[0],
     unescape: true
   });
