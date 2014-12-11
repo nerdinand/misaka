@@ -220,6 +220,8 @@ Misaka.prototype.initModules = function() {
   if(stat && stat.isDirectory()) {
     this.modules.loadFromDirectory(privPath);
   }
+
+  console.log(this.modules.toString());
 };
 
 /**
