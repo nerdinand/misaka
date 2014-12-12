@@ -30,6 +30,7 @@
     "socket.io-client": "~1.2.1",
     "tough-cookie": "~0.12.1",
     "underscore": "~1.7.0",
+    "underscore.string": "~2.4.0",
     "winston": "~0.8.3"
   },
   "optionalDependencies": {

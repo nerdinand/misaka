@@ -1,5 +1,7 @@
 var fs = require('fs');
+var minimist = require('minimist');
 var path = require('path');
+var _ = require('underscore');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
@@ -16,10 +18,14 @@ var Misaka = function() {
     process.exit();
   }
 
+  this.initLoggerLevel();
+
   // Try to initialize config
   if(!this.initConfig()) {
-    console.error('Couldn\'t read config file, aborting');
+    logger.error('Couldn\'t read config file, aborting');
     process.exit(1);
+  } else {
+    logger.log('debug', 'Loaded config', { path: this.argv.config });
   }
 
   this.initLogger();
@@ -50,10 +56,15 @@ var Misaka = function() {
 };
 
 Misaka.prototype.initArgs = function() {
-  var argv = this.argv = require('minimist')(process.argv.slice(2));
+  var argv = this.argv = minimist(process.argv.slice(2));
 
   if(argv.h) argv.help = true;
   if(argv.r) argv.room = argv.r;
+  if(argv.c) argv.config = argv.c;
+
+  if(_.isUndefined(argv.config)) {
+    argv.config = Config.getDefaultPath('misaka');
+  }
 };
 
 Misaka.prototype.initClientV7 = function() {
@@ -124,9 +135,16 @@ Misaka.prototype.initClient = function() {
  * @return true on success, false on error loading config
  */
 Misaka.prototype.initConfig = function() {
-  var defaultPath = path.join(__dirname, '..', 'config', 'misaka.json');
   this.config = new Config();
-  return this.config.readSync(defaultPath);
+
+  var success = false;
+  try {
+    success = this.config.readSync(this.argv.config);
+  } catch (e) {
+    logger.error(e, 'Error reading config');
+  }
+
+  return success;
 };
 
 Misaka.prototype.initModules = function() {
@@ -144,6 +162,16 @@ Misaka.prototype.initModules = function() {
 };
 
 /**
+ * Initialize the logger level. This allows for logging after parsing argv
+ * but before loading the config file.
+ */
+Misaka.prototype.initLoggerLevel = function() {
+  if(this.argv.debug) {
+    logger.setLevel('debug');
+  }
+};
+
+/**
  * Initialize the singleton logger.
  */
 Misaka.prototype.initLogger = function() {
@@ -152,10 +180,6 @@ Misaka.prototype.initLogger = function() {
     if(this.config.logging.detection !== undefined) {
       logger.enableDetection(!!this.config.logging.detection);
     }
-  }
-
-  if(this.argv.debug) {
-    logger.setLevel('debug');
   }
 };
 
