@@ -35,6 +35,7 @@
   },
   "optionalDependencies": {
     "execSync": "~1.0.2",
+    "moment": "~2.8.4",
     "plugapi": "git://github.com/saneki/plugAPI.git#async_login"
   }
 }
