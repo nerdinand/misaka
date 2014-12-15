@@ -10,17 +10,10 @@ npm install
 ```
 
 Then create a config file for your bot. A config file is just a JSON
-file, check `config/sample.json` for a sample:
-```
-{
-  "username": "Misaka",
-  "authkey": "SomeAuthkeyHere"
-}
-```
+file, check the `config/samples` directory for a few samples. At the
+very least, the bot needs some way to authenticate, which requires a
+username and either an authkey (V6-only) or a password.
 
-At the very least, a username and an authkey need to be defined.
-The username is the username of the bot's account, and the authkey
-needs to be extracted from the HTML.
 
 Config fields
 -------------
@@ -35,6 +28,7 @@ password   | Picarto account password, not necessary if using authkey
 username   | Picarto account username
 
 See `config/samples` for some sample config files.
+
 
 Getting the authkey
 -------------------
