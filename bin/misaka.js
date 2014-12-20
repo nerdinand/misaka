@@ -357,6 +357,7 @@ Misaka.prototype.initRoom = function(room) {
         command.used(username);
 
         result = command.execute({
+          database: misaka.getDbManager(),
           helper: misaka.helper, // Module helper
           logger: logger,
           message: message, // Full message
