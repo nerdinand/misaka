@@ -197,7 +197,8 @@ Misaka.prototype.processCommand = function(data) {
       parsed: misaka.helper.parseCommandMessage(message),
       room: { name: roomname }, // Backwards compatibility for modules
       roomname: roomname,
-      send: Misaka.prototype.send.bind(misaka, roomname)
+      send: Misaka.prototype.send.bind(misaka, roomname),
+      sender: username
     });
 
     // If a result was returned, assume it's a message, enqueue

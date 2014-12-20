@@ -3,6 +3,7 @@ var minimist = require('minimist');
 var path = require('path');
 var _ = require('underscore');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
+var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
@@ -29,6 +30,7 @@ var Misaka = function() {
   }
 
   this.initLogger();
+  this.initDbManager();
 
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
@@ -146,6 +148,23 @@ Misaka.prototype.initConfig = function() {
 
   return success;
 };
+
+/**
+ * Initialize the database manager.
+ */
+Misaka.prototype.initDbManager = function() {
+  this._db = new DbManager({
+    path: this.config.getDbPath()
+  });
+};
+
+/**
+ * Get the database manager instance.
+ * @return {DbManager} Database manager instance
+ */
+Misaka.prototype.getDbManager = function() {
+  return this._db;
+}
 
 Misaka.prototype.initModules = function() {
   this.modules.loadFromDirectory();
@@ -339,6 +358,16 @@ Misaka.prototype.initRoom = function(room) {
       misaka.print(username + ' -> ' + snapshot.whisper + ': ' + message);
     }
 
+    // If not a whisper, log the message in the db
+    if(snapshot.whisper === undefined) {
+      var db = misaka.getDbManager();
+      db.insertMessageToLog(room.name, username, message, function(err) {
+        if(err) {
+          logger.error(err, { msg: 'Error logging message' });
+        }
+      });
+    }
+
     // Check if command
     if(misaka.cmdproc.isCommand(username, message)
         && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
@@ -359,7 +388,8 @@ Misaka.prototype.initRoom = function(room) {
           parent: misaka,
           parsed: misaka.helper.parseCommandMessage(message),
           room: room, // Room this is from
-          send: Misaka.prototype.send.bind(misaka, room.name)
+          send: Misaka.prototype.send.bind(misaka, room.name),
+          sender: username
         });
 
         // If a result was returned, assume it's a message, enqueue
