@@ -49,12 +49,7 @@ var Misaka = function() {
     process.exit(1);
   }
 
-  if(this.argv.v7) {
-    console.log('Using V7 chat');
-    this.initClientV7();
-  } else {
-    this.initClient();
-  }
+  this.initClient();
 };
 
 Misaka.prototype.initArgs = function() {
@@ -66,28 +61,6 @@ Misaka.prototype.initArgs = function() {
 
   if(_.isUndefined(argv.config)) {
     argv.config = Config.getDefaultPath('misaka');
-  }
-};
-
-Misaka.prototype.initClientV7 = function() {
-  var client = this.clientV7 = new Picarto.ClientV7({
-    token: this.config.getAuthToken()
-  });
-
-  var socket = client.connectWithToken();
-
-  if(socket) {
-    socket.on('connect', function() {
-      console.log('[V7] connect');
-    });
-
-    socket.on('disconnect', function() {
-      console.log('[V7] disconnect');
-    });
-
-    socket.on('userMsg', function(data) {
-      console.log('[V7] ' + data.username + ': ' + data.msg);
-    });
   }
 };
 

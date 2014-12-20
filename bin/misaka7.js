@@ -144,8 +144,6 @@ Misaka.prototype.setupEvents = function(client) {
   var userList = client.getUserList();
 
   userList.on('initial', function(users) {
-    //console.log(['V7', 'UserList', 'initial', users]);
-
     var usernames = [];
     users.forEach(function(user) {
       usernames.push(user.username);
@@ -155,17 +153,14 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   userList.on('userAdded', function(user) {
-    //console.log(['V7', 'UserList', 'userAdded', user]);
     console.log('*** ' + user.username + ' has joined the room ***');
   });
 
   userList.on('userChanged', function(diff) {
-    //console.log(['V7', 'UserList', 'userChanged', diff[0], diff[1]]);
     console.log('*** ' + diff[0].username + ' has changed in some way ***');
   });
 
   userList.on('userRemoved', function(user) {
-    //console.log(['V7', 'UserList', 'userRemoved', user]);
     console.log('*** ' + user.username + ' has left the room ***');
   });
 };
@@ -417,83 +412,6 @@ Misaka.prototype.fireRoomJoin = function(roomname) {
 Misaka.prototype.print = function(s) {
   var date = (new Date()).toTimeString().split(' ')[0];
   console.log('[' + date + '] ' + s);
-};
-
-// Will need to move most of this functionality
-Misaka.prototype.initRoom = function(room) {
-  var misaka = this;
-
-  // Initialize the message queue for this room
-  this.initMessageQueue(room);
-
-  // Need to clean this up one day...
-  room.onMessage(function(snapshot) {
-    var username = snapshot.username,
-        message = snapshot.message;
-
-    if(snapshot.whisper === undefined) {
-      misaka.print(username + ': ' + message);
-    } else {
-      misaka.print(username + ' -> ' + snapshot.whisper + ': ' + message);
-    }
-
-    // Check if command
-    if(misaka.cmdproc.isCommand(username, message)
-        && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
-      var cmdname = misaka.cmdproc.getCommandName(message);
-
-      var command = misaka.getCommand(cmdname);
-      if(command && command.isEnabled() && command.isMasterOnly()
-        && username !== misaka.getMasterName()) {
-        misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
-      } else if(command && !command.canBeUsed(username)) {
-        misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
-      } else if(command && command.isEnabled()) {
-        command.used(username);
-
-        result = command.execute({
-          helper: misaka.helper, // Module helper
-          message: message, // Full message
-          parent: misaka,
-          parsed: misaka.helper.parseCommandMessage(message),
-          room: room, // Room this is from
-          send: Misaka.prototype.send.bind(misaka, room.name)
-        });
-
-        // If a result was returned, assume it's a message, enqueue
-        if(result !== undefined) {
-          misaka.send(room.name, result);
-        }
-      } else if(!command) {
-        misaka.print('No command found: ' + cmdname);
-      } else if(!command.isEnabled()) {
-        misaka.print('Command (or parent module) is disabled: ' + cmdname);
-      }
-    }
-
-  }).onUserJoin(function(snapshot) {
-    misaka.print('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
-  }).onUserLeave(function(snapshot) {
-    misaka.print('*** ' + snapshot.username + ' has left the room ***');
-  }).onHistory(function(history) {
-    // Not a snapshot for now
-    // This may not order correctly?
-    console.log('--- History ---');
-    for(var key in history) {
-      var message = history[key];
-      console.log(message.user + ': ' + message.message);
-    }
-    console.log('--- End History ---');
-
-    // Hacky for now.. Consider this point as "room joined"
-    misaka.fireRoomJoin(room);
-  }).onWhisper(function(snapshot) {
-    misaka.print('*whisper* ' + snapshot.from + ': ' + snapshot.message);
-  }).onClear(function() {
-    misaka.print('*** Room chat has been cleared by admin ***');
-  });
-
-  room.connect();
 };
 
 Misaka.prototype.printHelp = function() {
