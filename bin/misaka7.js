@@ -44,7 +44,7 @@ var Misaka = function() {
   if(this.argv.room) this.config.setRoom(this.argv.room);
 
   if(this.config.getRooms().length === 0) {
-    console.error('No room to join specified, aborting');
+    logger.error('No room to join specified, aborting');
     process.exit(1);
   }
 
@@ -80,7 +80,7 @@ Misaka.prototype.initBot = function() {
     if(!error) {
       misaka.setupEvents(client);
     } else {
-      console.error('Error connecting to room (' + misaka.getConfig().getRooms()[0] + '):', error);
+      logger.error(error, { msg: 'Error connecting to room', room: misaka.getConfig().getRooms()[0] });
       process.exit(1);
     }
   });
@@ -184,14 +184,15 @@ Misaka.prototype.processCommand = function(data) {
 
   if(command && command.isEnabled() && command.isMasterOnly()
     && username !== misaka.getMasterName()) {
-    misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
+    logger.warn('Non-master trying to use a master-only command', { username: username, command: command.name() });
   } else if(command && !command.canBeUsed(username)) {
-    misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
+    logger.warn('Cooldown prevented command execution', { username: username, command: command.name() });
   } else if(command && command.isEnabled()) {
     command.used(username);
 
     result = command.execute({
       helper: misaka.helper, // Module helper
+      logger: logger,
       message: message, // Full message
       parent: misaka,
       parsed: misaka.helper.parseCommandMessage(message),
@@ -241,7 +242,7 @@ Misaka.prototype.initModules = function() {
     this.modules.loadFromDirectory(privPath);
   }
 
-  console.log(this.modules.toString());
+  logger.info(this.modules.toString());
 };
 
 /**
@@ -295,7 +296,7 @@ Misaka.prototype.send = function(roomname, message) {
   if(queue) {
     queue.push(message);
   } else {
-    console.warn('Cannot push message to non-existant queue: %s', roomname);
+    logger.warn('Cannot push message to non-existant queue', { room: roomname });
   }
 };
 
@@ -402,6 +403,7 @@ Misaka.prototype.fireRoomJoin = function(roomname) {
 
     module.emit('join', {
       config: config,
+      logger: logger,
       room: { name: roomname },
       send: Misaka.prototype.send.bind(misaka, roomname)
     });

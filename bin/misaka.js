@@ -45,7 +45,7 @@ var Misaka = function() {
   if(this.argv.room) this.config.setRoom(this.argv.room);
 
   if(this.config.getRooms().length === 0) {
-    console.error('No room to join specified, aborting');
+    logger.error('No room to join specified, aborting');
     process.exit(1);
   }
 
@@ -116,7 +116,7 @@ Misaka.prototype.initClient = function() {
 
   // Listen for global messages
   this.client.onGlobalMessage(function(s) {
-    console.log('*** Global Message *** ' + s.message);
+    misaka.print('*** Global Message *** ' + s.message);
   });
 
   // Connect
@@ -126,7 +126,7 @@ Misaka.prototype.initClient = function() {
       var room = misaka.client.join(misaka.config.getRooms()[0]);
       misaka.initRoom(room);
     } else {
-      console.warn('Error connecting:', err);
+      logger.error(err, { msg: 'Error connecting' });
     }
   });
 };
@@ -177,7 +177,7 @@ Misaka.prototype.initModules = function() {
     this.modules.loadFromDirectory(privPath);
   }
 
-  console.log(this.modules.toString());
+  logger.info(this.modules.toString());
 };
 
 /**
@@ -326,6 +326,7 @@ Misaka.prototype.fireRoomJoin = function(room) {
 
     module.emit('join', {
       config: config,
+      logger: logger,
       room: room,
       send: Misaka.prototype.send.bind(misaka, room.name)
     });
@@ -376,14 +377,15 @@ Misaka.prototype.initRoom = function(room) {
       var command = misaka.getCommand(cmdname);
       if(command && command.isEnabled() && command.isMasterOnly()
         && username !== misaka.getMasterName()) {
-        misaka.print('Non-master trying to use a master-only command `' + command.name() + '`');
+        logger.warn('Non-master trying to use a master-only command', { username: username, command: command.name() });
       } else if(command && !command.canBeUsed(username)) {
-        misaka.print(username + ' trying to use command `' + command.name() + '` while cooling down');
+        logger.warn('Cooldown prevented command execution', { username: username, command: command.name() });
       } else if(command && command.isEnabled()) {
         command.used(username);
 
         result = command.execute({
           helper: misaka.helper, // Module helper
+          logger: logger,
           message: message, // Full message
           parent: misaka,
           parsed: misaka.helper.parseCommandMessage(message),
