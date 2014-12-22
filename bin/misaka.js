@@ -111,6 +111,7 @@ Misaka.prototype.initClient = function() {
  */
 Misaka.prototype.initConfig = function() {
   this.config = new Config();
+  this.config.createDirectorySync();
 
   var success = false;
   try {
