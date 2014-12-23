@@ -381,7 +381,9 @@ Misaka.prototype.initRoom = function(room) {
     }
 
   }).onUserJoin(function(snapshot) {
-    misaka.print('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
+    if(snapshot.isPresent()) {
+      misaka.print('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
+    }
   }).onUserLeave(function(snapshot) {
     misaka.print('*** ' + snapshot.username + ' has left the room ***');
   }).onHistory(function(history) {
