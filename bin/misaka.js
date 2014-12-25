@@ -79,7 +79,7 @@ Misaka.prototype.initClient = function() {
   });
 
   // Listen for auth events
-  this.client.onAuth(function(authData) {
+  this.client.on('auth', function(authData) {
     if(authData) { // Re-authd
       misaka.setConnected(true);
     } else { // Un-authd
@@ -88,7 +88,7 @@ Misaka.prototype.initClient = function() {
   });
 
   // Listen for global messages
-  this.client.onGlobalMessage(function(s) {
+  this.client.on('message:global', function(s) {
     misaka.print('*** Global Message *** ' + s.message);
   });
 
@@ -323,7 +323,7 @@ Misaka.prototype.initRoom = function(room) {
   this.initMessageQueue(room);
 
   // Need to clean this up one day...
-  room.onMessage(function(snapshot) {
+  room.on('message:added', function(snapshot) {
     var username = snapshot.username,
         message = snapshot.message;
 
@@ -380,13 +380,19 @@ Misaka.prototype.initRoom = function(room) {
       }
     }
 
-  }).onUserJoin(function(snapshot) {
+  });
+
+  room.on('user:added', function(snapshot) {
     if(snapshot.isPresent()) {
       misaka.print('*** ' + snapshot.username + ' has joined the room *** (' + snapshot.snapshot.key() + ')');
     }
-  }).onUserLeave(function(snapshot) {
+  });
+
+  room.on('user:removed', function(snapshot) {
     misaka.print('*** ' + snapshot.username + ' has left the room ***');
-  }).onHistory(function(history) {
+  });
+
+  room.on('history', function(history) {
     // Not a snapshot for now
     // This may not order correctly?
     console.log('--- History ---');
@@ -398,9 +404,13 @@ Misaka.prototype.initRoom = function(room) {
 
     // Hacky for now.. Consider this point as "room joined"
     misaka.fireRoomJoin(room);
-  }).onWhisper(function(snapshot) {
+  });
+
+  room.on('whisper', function(snapshot) {
     misaka.print('*whisper* ' + snapshot.from + ': ' + snapshot.message);
-  }).onClear(function() {
+  });
+
+  room.on('clear', function() {
     misaka.print('*** Room chat has been cleared by admin ***');
   });
 
