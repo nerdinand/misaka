@@ -316,13 +316,54 @@ Misaka.prototype.print = function(s) {
   console.log('[' + date + '] ' + s);
 };
 
+/**
+ * Process a command message given a message object.
+ * @param {Room} room Room instance
+ * @param {MessageSnapshot} snapshot
+ */
+Misaka.prototype.processCommand = function(room, snapshot) {
+  var username = snapshot.username,
+      message = snapshot.message,
+      cmdname = this.cmdproc.getCommandName(message);
+
+  var command = this.getCommand(cmdname);
+  if(command && command.isEnabled() && command.isMasterOnly()
+    && username !== this.getMasterName()) {
+    logger.warn('Non-master trying to use a master-only command', { username: username, command: command.name() });
+  } else if(command && !command.canBeUsed(username)) {
+    logger.warn('Cooldown prevented command execution', { username: username, command: command.name() });
+  } else if(command && command.isEnabled()) {
+    command.used(username);
+
+    result = command.execute({
+      database: this.getDbManager(),
+      helper: this.helper, // Module helper
+      logger: logger,
+      message: message, // Full message
+      parent: this,
+      parsed: this.helper.parseCommandMessage(message),
+      room: room, // Room this is from
+      send: Misaka.prototype.send.bind(this, room.name),
+      sender: username
+    });
+
+    // If a result was returned, assume it's a message, enqueue
+    if(result !== undefined) {
+      this.send(room.name, result);
+    }
+  } else if(!command) {
+    this.print('No command found: ' + cmdname);
+  } else if(!command.isEnabled()) {
+    this.print('Command (or parent module) is disabled: ' + cmdname);
+  }
+};
+
 Misaka.prototype.initRoom = function(room) {
   var misaka = this;
 
   // Initialize the message queue for this room
   this.initMessageQueue(room);
 
-  // Need to clean this up one day...
   room.on('message:added', function(snapshot) {
     var username = snapshot.username,
         message = snapshot.message;
@@ -346,40 +387,8 @@ Misaka.prototype.initRoom = function(room) {
     // Check if command
     if(misaka.cmdproc.isCommand(username, message)
         && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
-      var cmdname = misaka.cmdproc.getCommandName(message);
-
-      var command = misaka.getCommand(cmdname);
-      if(command && command.isEnabled() && command.isMasterOnly()
-        && username !== misaka.getMasterName()) {
-        logger.warn('Non-master trying to use a master-only command', { username: username, command: command.name() });
-      } else if(command && !command.canBeUsed(username)) {
-        logger.warn('Cooldown prevented command execution', { username: username, command: command.name() });
-      } else if(command && command.isEnabled()) {
-        command.used(username);
-
-        result = command.execute({
-          database: misaka.getDbManager(),
-          helper: misaka.helper, // Module helper
-          logger: logger,
-          message: message, // Full message
-          parent: misaka,
-          parsed: misaka.helper.parseCommandMessage(message),
-          room: room, // Room this is from
-          send: Misaka.prototype.send.bind(misaka, room.name),
-          sender: username
-        });
-
-        // If a result was returned, assume it's a message, enqueue
-        if(result !== undefined) {
-          misaka.send(room.name, result);
-        }
-      } else if(!command) {
-        misaka.print('No command found: ' + cmdname);
-      } else if(!command.isEnabled()) {
-        misaka.print('Command (or parent module) is disabled: ' + cmdname);
-      }
+      misaka.processCommand(room, snapshot);
     }
-
   });
 
   room.on('user:added', function(snapshot) {
