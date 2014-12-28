@@ -38,7 +38,28 @@ pollOptions     | Specify options for a poll (?)
 pollVote        | Vote for a poll (?)
 raffleUsers     | Perform a raffle given some users (?)
 setColor        | Set username color
-setName         | Set name (always causes a kick?)
+setName         | Attempt to set name, with a `nameResp` event sent in response.
+
+
+Examples (Incoming)
+-------------------
+
+### nameResp
+
+Response event for `setName`.
+
+```
+socket.on('nameResp', function(data) {
+  if(data === true) {
+    // Name was successfully set
+    console.log('Name was set!');
+  } else {
+    // If not true, data will be a message indicating why
+    // setting the name failed
+    console.error('Couldn\'t set name: ' + data);
+  }
+});
+```
 
 
 Examples (Outgoing)
@@ -91,7 +112,8 @@ socket.emit('setColor', '123ABC');
 
 ### setName
 
-Attmpt to set the client's username? Unsure when this is used, it always results in a kick.
+Attempt to set the client's username. Will result in a kick if a name has already
+been set.
 
 ```
 socket.emit('setName', 'User123');
