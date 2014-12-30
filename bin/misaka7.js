@@ -3,6 +3,7 @@ var minimist = require('minimist');
 var path = require('path');
 var _ = require('underscore');
 var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
+var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Bot = require(path.join(__dirname, '..', 'lib', 'bot'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
@@ -30,6 +31,7 @@ var Misaka = function() {
   }
 
   this.initLogger();
+  this.initDbManager();
 
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
@@ -120,6 +122,15 @@ Misaka.prototype.setupEvents = function(client) {
 
       misaka.print(username + ': ' + message);
 
+      var db = misaka.getDbManager(),
+          roomname = misaka.config.getRooms()[0];
+
+      db.insertMessageToLog(roomname, username, message, function(err) {
+        if(err) {
+          logger.error(err, { msg: 'Error logging message' });
+        }
+      });
+
       // Check if command
       if(misaka.cmdproc.isCommand(username, message)
           && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
@@ -186,6 +197,7 @@ Misaka.prototype.processCommand = function(data) {
     command.used(username);
 
     result = command.execute({
+      database: this.getDbManager(),
       helper: misaka.helper, // Module helper
       logger: logger,
       message: message, // Full message
@@ -225,6 +237,23 @@ Misaka.prototype.initConfig = function() {
   }
 
   return success;
+};
+
+/**
+ * Initialize the database manager.
+ */
+Misaka.prototype.initDbManager = function() {
+  this._db = new DbManager({
+    path: this.config.getDbPath()
+  });
+};
+
+/**
+ * Get the database manager instance.
+ * @return {DbManager} Database manager instance
+ */
+Misaka.prototype.getDbManager = function() {
+  return this._db;
 };
 
 Misaka.prototype.initModules = function() {

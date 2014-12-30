@@ -138,7 +138,7 @@ Misaka.prototype.initDbManager = function() {
  */
 Misaka.prototype.getDbManager = function() {
   return this._db;
-}
+};
 
 Misaka.prototype.initModules = function() {
   this.modules.loadFromDirectory();
