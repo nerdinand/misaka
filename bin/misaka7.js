@@ -107,19 +107,14 @@ Misaka.prototype.setupEvents = function(client) {
     console.log('Disconnected');
   });
 
+  socket.on('meMsg', function(data) {
+    misaka.print('** ' + data.username + ' ' + data.msg + ' **');
+  });
+
   socket.on('userMsg', function(data) {
     if(!data.history) {
-      //console.log(['V7', data.username + ': ' + data.msg]);
-
       var username = data.username,
           message = data.msg;
-
-      // Whispers in a different event now
-      //if(snapshot.whisper === undefined) {
-      //  misaka.print(username + ': ' + message);
-      //} else {
-      //  misaka.print(username + ' -> ' + snapshot.whisper + ': ' + message);
-      //}
 
       misaka.print(username + ': ' + message);
 
@@ -171,15 +166,15 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   userList.on('userAdded', function(user) {
-    console.log('*** ' + user.username + ' has joined the room ***');
+    misaka.print('*** ' + user.username + ' has joined the room ***');
   });
 
   userList.on('userChanged', function(diff) {
-    console.log('*** ' + diff[0].username + ' has changed in some way ***');
+    misaka.print('*** ' + diff[0].username + ' has changed in some way ***');
   });
 
   userList.on('userRemoved', function(user) {
-    console.log('*** ' + user.username + ' has left the room ***');
+    misaka.print('*** ' + user.username + ' has left the room ***');
   });
 };
 
