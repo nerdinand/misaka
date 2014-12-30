@@ -17,6 +17,7 @@ globalMsg       | Todo
 meMsg           | Todo
 modList         | Todo
 modToolsVisible | Todo
+nameResp        | Todo
 onlineState     | Todo
 pollVotes       | Todo
 raffleUsers     | Todo
@@ -57,6 +58,20 @@ socket.on('nameResp', function(data) {
     // If not true, data will be a message indicating why
     // setting the name failed
     console.error('Couldn\'t set name: ' + data);
+  }
+});
+```
+
+### onlineState
+
+Emitted when the viewer count changes. If `viewers` is `-1`, the stream went offline.
+
+```
+socket.on('onlineState', function(data) {
+  if(data.viewers === -1) {
+    console.log('Stream is offline');
+  } else {
+    console.log('Current viewers: ' + data.viewers);
   }
 });
 ```

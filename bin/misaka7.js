@@ -94,11 +94,12 @@ Misaka.prototype.initBot = function() {
  */
 Misaka.prototype.setupEvents = function(client) {
   var misaka = this,
-      socket = client.getSocket();
+      socket = client.getSocket(),
+      roomname = misaka.config.getRooms()[0];
 
   this.initMessageQueue(client);
   // Consider room joined
-  this.fireRoomJoin(this.config.getRooms()[0]);
+  this.fireRoomJoin(roomname);
 
   console.log('Connected');
 
@@ -122,8 +123,7 @@ Misaka.prototype.setupEvents = function(client) {
 
       misaka.print(username + ': ' + message);
 
-      var db = misaka.getDbManager(),
-          roomname = misaka.config.getRooms()[0];
+      var db = misaka.getDbManager();
 
       db.insertMessageToLog(roomname, username, message, function(err) {
         if(err) {
@@ -149,6 +149,13 @@ Misaka.prototype.setupEvents = function(client) {
       console.log(data.username + ': ' + data.msg);
     });
     console.log('--- End History ---');
+  });
+
+  var onlineWatcher = client.getOnlineWatcher();
+
+  onlineWatcher.on('stateChanged', function(online) {
+    var onlineString = (online ? 'online!' : 'offline.');
+    misaka.send(roomname + ' is now ' + onlineString);
   });
 
   // Setup userlist events
@@ -317,6 +324,12 @@ Misaka.prototype.setConnected = function(c) {
  * @param message Message to send
  */
 Misaka.prototype.send = function(roomname, message) {
+  // If only one arg, assume message and use the default room name
+  if(arguments.length === 1) {
+    message = roomname;
+    roomname = this.config.getRooms()[0];
+  }
+
   var queue = this.queues[roomname];
   if(queue) {
     queue.push(message);
