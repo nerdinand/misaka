@@ -1,4 +1,5 @@
 var fs = require('fs');
+var i18n = require('i18n');
 var minimist = require('minimist');
 var path = require('path');
 var _ = require('underscore');
@@ -7,10 +8,12 @@ var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Bot = require(path.join(__dirname, '..', 'lib', 'bot'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
+var Locale = require(path.join(__dirname, '..', 'lib', 'locale'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'));
 var logger = require(path.join(__dirname, '..', 'lib', 'logger'));
+var __ = i18n.__;
 
 var Misaka = function() {
   this.initArgs();
@@ -20,6 +23,7 @@ var Misaka = function() {
     process.exit();
   }
 
+  this.initLocale();
   this.initLoggerLevel();
 
   // Try to initialize config
@@ -101,10 +105,10 @@ Misaka.prototype.setupEvents = function(client) {
   // Consider room joined
   this.fireRoomJoin(roomname);
 
-  console.log('Connected');
+  console.log(__('Connected'));
 
   socket.on('disconnect', function() {
-    console.log('Disconnected');
+    console.log(__('Disconnected'));
   });
 
   socket.on('meMsg', function(data) {
@@ -135,22 +139,25 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   socket.on('clearChat', function() {
-    misaka.print('*** Room chat has been cleared by admin ***');
+    misaka.print('*** ' + __('Room chat has been cleared by admin') + ' ***');
   });
 
   client.on('history', function(history) {
-    console.log('--- Begin History ---');
+    console.log('--- ' + __('Begin History') + ' ---');
     history.forEach(function(data) {
       console.log(data.username + ': ' + data.msg);
     });
-    console.log('--- End History ---');
+    console.log('--- ' + __('End History') + ' ---');
   });
 
   var onlineWatcher = client.getOnlineWatcher();
 
   onlineWatcher.on('stateChanged', function(online) {
-    var onlineString = (online ? 'online!' : 'offline.');
-    misaka.send(roomname + ' is now ' + onlineString);
+    if(online) {
+      misaka.send(__('%s is now online!', roomname));
+    } else {
+      misaka.send(__('%s is now offline.', roomname));
+    }
   });
 
   // Setup userlist events
@@ -162,19 +169,19 @@ Misaka.prototype.setupEvents = function(client) {
       usernames.push(user.username);
     });
 
-    console.log('Users in room: ' + usernames.join(', '));
+    console.log(__('Users in room: %s', usernames.join(', ')));
   });
 
   userList.on('userAdded', function(user) {
-    misaka.print('*** ' + user.username + ' has joined the room ***');
+    misaka.print('*** ' + __('%s has joined the room', user.username) + ' ***');
   });
 
   userList.on('userChanged', function(diff) {
-    misaka.print('*** ' + diff[0].username + ' has changed in some way ***');
+    misaka.print('*** ' + __('%s has changed in some way', diff[0].username) + ' ***');
   });
 
   userList.on('userRemoved', function(user) {
-    misaka.print('*** ' + user.username + ' has left the room ***');
+    misaka.print('*** ' + __('%s has left the room', user.username) + ' ***');
   });
 };
 
@@ -216,9 +223,9 @@ Misaka.prototype.processCommand = function(data) {
       misaka.send(roomname, result);
     }
   } else if(!command) {
-    misaka.print('No command found: ' + cmdname);
+    misaka.print(__('No command found: %s', cmdname));
   } else if(!command.isEnabled()) {
-    misaka.print('Command (or parent module) is disabled: ' + cmdname);
+    misaka.print(__('Command (or parent module) is disabled: %s', cmdname));
   }
 };
 
@@ -270,6 +277,13 @@ Misaka.prototype.initModules = function() {
   }
 
   logger.info(this.modules.toString());
+};
+
+/**
+ * Configure the global i18n instance.
+ */
+Misaka.prototype.initLocale = function() {
+  (new Locale()).configure();
 };
 
 /**

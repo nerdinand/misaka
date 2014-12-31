@@ -1,0 +1,15 @@
+{
+  "Connected": "Connected",
+  "Begin History": "Begin History",
+  "End History": "End History",
+  "Users in room: %s": "Users in room: %s",
+  "%s has left the room": "%s has left the room",
+  "%s has joined the room": "%s has joined the room",
+  "Disconnected": "Disconnected",
+  "%s has changed in some way": "%s has changed in some way",
+  "No command found: %s": "No command found: %s",
+  "Room chat has been cleared by admin": "Room chat has been cleared by admin",
+  "Command (or parent module) is disabled: %s": "Command (or parent module) is disabled: %s",
+  "%s is now online!": "%s is now online!",
+  "%s is now offline.": "%s is now offline."
+}
