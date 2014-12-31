@@ -1,3 +1,4 @@
+var async = require('async');
 var fs = require('fs');
 var i18n = require('i18n');
 var minimist = require('minimist');
@@ -12,6 +13,7 @@ var Locale = require(path.join(__dirname, '..', 'lib', 'locale'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'));
+var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
 var logger = require(path.join(__dirname, '..', 'lib', 'logger'));
 var __ = i18n.__;
 
@@ -36,6 +38,7 @@ var Misaka = function() {
 
   this.initLogger();
   this.initDbManager();
+  this.initInterface();
 
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
@@ -258,6 +261,18 @@ Misaka.prototype.initDbManager = function() {
 };
 
 /**
+ * Initialize the interface (for now, always the SocketInterface).
+ */
+Misaka.prototype.initInterface = function() {
+  var send = Misaka.prototype.send.bind(this);
+
+  this._interface = new SocketInterface();
+  this._interface.on('sendMsg', function(msg) {
+    send(msg);
+  });
+};
+
+/**
  * Get the database manager instance.
  * @return {DbManager} Database manager instance
  */
@@ -466,6 +481,24 @@ Misaka.prototype.print = function(s) {
   console.log('[' + date + '] ' + s);
 };
 
+Misaka.prototype.teardown = function(callback) {
+  var asyncTasks = [];
+
+  // If interface, close it
+  if(this._interface) {
+    asyncTasks.push(this._interface.close.bind(this._interface));
+  }
+
+  async.parallel(asyncTasks, function() {
+    // Assuming the logger hasn't been torn down
+    logger.log('debug', 'Tearing down complete (async)', { count: asyncTasks.length });
+
+    if(callback) {
+      callback();
+    }
+  });
+};
+
 Misaka.prototype.printHelp = function() {
   console.log('Misaka - picarto.tv bot (for chat V7)');
   console.log('usage: misaka7 [options]');
@@ -477,3 +510,13 @@ Misaka.prototype.printHelp = function() {
 };
 
 var misaka = new Misaka();
+
+// Handle SIGINT and stuff
+(function() {
+  process.stdin.resume();
+  process.on('SIGINT', function() {
+    misaka.teardown(function() {
+      process.exit();
+    });
+  });
+})();
