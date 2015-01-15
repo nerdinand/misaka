@@ -1,6 +1,0 @@
-{
-  "description": "Sample config file for authenticating with only credentials (username and password)",
-
-  "username": "User123",
-  "password": "123456"
-}

@@ -1,9 +1,8 @@
 {
-  "description": "Basic config file (with creds and authkey)",
+  "description": "Basic config file",
 
   "username": "Misaka",
   "password": "password123",
-  "authkey": "SomeAuthkeyHere",
 
   "color": "#ac0000",
   "master": "MasterUser123",
