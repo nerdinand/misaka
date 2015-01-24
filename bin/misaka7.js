@@ -118,6 +118,10 @@ Misaka.prototype.setupEvents = function(client) {
     misaka.print('** ' + data.username + ' ' + data.msg + ' **');
   });
 
+  socket.on('whisper', function(data) {
+    misaka.print(data.username + ' whispered: ' + data.msg);
+  });
+
   socket.on('userMsg', function(data) {
     if(!data.history) {
       var username = data.username,

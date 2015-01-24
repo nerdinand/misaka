@@ -76,6 +76,16 @@ socket.on('onlineState', function(data) {
 });
 ```
 
+### whisper
+
+Emitted when a whisper is received from another user.
+
+```
+socket.on('whisper', function(data) {
+  console.log(data.username + ' whispered: ' + data.msg);
+});
+```
+
 
 Examples (Outgoing)
 -------------------
