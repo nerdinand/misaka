@@ -119,7 +119,16 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   socket.on('whisper', function(data) {
-    misaka.print(data.username + ' whispered: ' + data.msg);
+    var username = data.username,
+        message = data.msg;
+
+    misaka.print(username + ' whispered: ' + message);
+
+    // Check if command
+    if(misaka.cmdproc.isCommand(username, message)
+        && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
+      misaka.processCommand(data, 'whisper');
+    }
   });
 
   socket.on('userMsg', function(data) {
@@ -140,7 +149,7 @@ Misaka.prototype.setupEvents = function(client) {
       // Check if command
       if(misaka.cmdproc.isCommand(username, message)
           && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
-        misaka.processCommand(data);
+        misaka.processCommand(data, 'chat');
       }
     }
   });
@@ -193,10 +202,32 @@ Misaka.prototype.setupEvents = function(client) {
 };
 
 /**
+ * Whisper something to a user. This function is a bit weird because it's meant
+ * to be passed as a part of command data, so when used with one arg (message) it
+ * responds to the command sender. With two args, it assumes (user, message).
+ * @param roomname Room name
+ * @param sender Command sender
+ * @param message Message (or user to whisper, if 4 args)
+ * @param [realMessage] Message if 4 args
+ */
+Misaka.prototype.whisper = function(roomname, sender, message, realMessage) {
+  if(arguments.length === 4) {
+    sender = message;
+    message = realMessage;
+  }
+
+  var client = this.getBot().getClientManager().getClient(roomname);
+  if(client) {
+    client.whisper(sender, message);
+  }
+};
+
+/**
  * Process a command message given a message object.
  * @param data Message object received from userMsg event.
+ * @param mode Message mode, 'chat' or 'whisper'
  */
-Misaka.prototype.processCommand = function(data) {
+Misaka.prototype.processCommand = function(data, mode) {
   var misaka = this,
       username = data.username,
       message = data.msg,
@@ -212,22 +243,31 @@ Misaka.prototype.processCommand = function(data) {
   } else if(command && command.isEnabled()) {
     command.used(username);
 
+    var send = Misaka.prototype.send.bind(misaka, roomname),
+        whisper = Misaka.prototype.whisper.bind(misaka, roomname, username),
+        respond = (mode === 'chat' ? send : whisper);
+
     result = command.execute({
       database: this.getDbManager(),
       helper: misaka.helper, // Module helper
       logger: logger,
       message: message, // Full message
+      mode: mode,
       parent: misaka,
       parsed: misaka.helper.parseCommandMessage(message),
+      respond: respond,
       room: { name: roomname }, // Backwards compatibility for modules
       roomname: roomname,
-      send: Misaka.prototype.send.bind(misaka, roomname),
-      sender: username
+      send: send,
+      sender: username,
+      whisper: whisper
     });
 
     // If a result was returned, assume it's a message, enqueue
     if(result !== undefined) {
-      misaka.send(roomname, result);
+      // Changing from `send` to `respond` may cause issues?
+      // misaka.send(roomname, result);
+      respond(result);
     }
   } else if(!command) {
     misaka.print(__('No command found: %s', cmdname));
