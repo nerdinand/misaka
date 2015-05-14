@@ -216,10 +216,12 @@ Misaka.prototype.whisper = function(roomname, sender, message, realMessage) {
     message = realMessage;
   }
 
-  var client = this.getBot().getClientManager().getClient(roomname);
-  if(client) {
-    client.whisper(sender, message);
-  }
+  this.send('/w ' + sender + ' ' + message);
+
+  //var client = this.getBot().getClientManager().getClient(roomname);
+  //if(client) {
+  //  client.whisper(sender, message);
+  //}
 };
 
 /**
@@ -233,7 +235,8 @@ Misaka.prototype.processCommand = function(data, mode) {
       message = data.msg,
       cmdname = misaka.cmdproc.getCommandName(message),
       command = misaka.getCommand(cmdname),
-      roomname = this.config.getRooms()[0];
+      roomname = this.config.getRooms()[0],
+      user = this.getBot().getClientManager().getClient(roomname).getUserList().getUser(username);
 
   if(command && command.isEnabled() && command.isMasterOnly()
     && username !== misaka.getMasterName()) {
@@ -260,6 +263,7 @@ Misaka.prototype.processCommand = function(data, mode) {
       roomname: roomname,
       send: send,
       sender: username,
+      user: user, // User object of sender
       whisper: whisper
     });
 
@@ -509,9 +513,13 @@ Misaka.prototype.fireRoomJoin = function(roomname) {
 
     module.emit('join', {
       config: config,
+      database: misaka.getDbManager(),
       logger: logger,
+      parent: misaka,
       room: { name: roomname },
-      send: Misaka.prototype.send.bind(misaka, roomname)
+      roomname: roomname,
+      send: Misaka.prototype.send.bind(misaka, roomname),
+      whisper: Misaka.prototype.whisper.bind(misaka, roomname)
     });
   });
 };
