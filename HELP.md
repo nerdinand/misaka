@@ -5,8 +5,8 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 
 ## Commands sorted by module
 
-[mod_lumineko](#mod_lumineko)
-[mod_rawr](#mod_rawr)
+- [mod_lumineko](#mod_lumineko)
+- [mod_rawr](#mod_rawr)
 
 
 ### mod_lumineko
