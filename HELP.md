@@ -26,6 +26,7 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 | Command  | Description
 | -------- | ---------------------------------------------------------------------------
 | gg       | Starts a guessing game (whisper only, channel admin only)
+| ggend    | End an ongoing game early, without awarding points (channel admin only)
 | guess    | Make a guess during the game
 | ggrules  | Link to the game rules
 | ggticket | Whispers a list of all users who have an unused ticket (channel admin only)
