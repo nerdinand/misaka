@@ -33,6 +33,7 @@ admin and mod only).
 | ggticket | Whispers a list of all users who have an unused ticket (channel admin only)
 | mark     | Mark a user's unused ticket as used (channel admin only)
 | rp       | Whisper back the user's RAWR point total
+| rpgive   | Give a user RAWR points (channel admin only)
 | rpredeem | Purchase a RAWR ticket
 
 `!gg Some Character, Alternate Character Name` starts a guessing game with two possible answers.
@@ -40,3 +41,5 @@ admin and mod only).
 `!guess some character` performs a (case-insensitive) guess of "some character." Can be whispered.
 
 `!mark user123` marks user123's unused ticket as used, if they have an unused ticket.
+
+`!rpgive user123 20` will give user123 20 RAWR points if they are in the room.
