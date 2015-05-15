@@ -236,7 +236,8 @@ Misaka.prototype.processCommand = function(data, mode) {
       cmdname = misaka.cmdproc.getCommandName(message),
       command = misaka.getCommand(cmdname),
       roomname = this.config.getRooms()[0],
-      user = this.getBot().getClientManager().getClient(roomname).getUserList().getUser(username);
+      client = this.getBot().getClientManager().getClient(roomname),
+      user = client.getUserList().getUser(username);
 
   if(command && command.isEnabled() && command.isMasterOnly()
     && username !== misaka.getMasterName()) {
@@ -252,6 +253,7 @@ Misaka.prototype.processCommand = function(data, mode) {
         respond = (mode === 'chat' ? send : whisper);
 
     result = command.execute({
+      client: client,
       database: this.getDbManager(),
       helper: misaka.helper, // Module helper
       logger: logger,
