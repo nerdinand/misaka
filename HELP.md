@@ -18,7 +18,8 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 | sketchraffle    | Post sketch raffle info
 | streamtipraffle | Post stream tip raffle info
 
-`!challenge on` will turn challenge reminders on, `!challenge off` will turn them off.
+`!challenge on` will turn challenge reminders on, `!challenge off` will turn them off (channel
+admin and mod only).
 
 
 ### mod_rawr
