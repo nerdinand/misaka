@@ -28,6 +28,7 @@ admin and mod only).
 | -------- | ---------------------------------------------------------------------------
 | gg       | Starts a guessing game (whisper only, channel admin only)
 | ggend    | End an ongoing game early, without awarding points (channel admin only)
+| ggex     | Exempt a user from the current game (channel admin only)
 | guess    | Make a guess during the game
 | ggrules  | Link to the game rules
 | ggticket | Whispers a list of all users who have an unused ticket (channel admin only)
@@ -37,6 +38,8 @@ admin and mod only).
 | rpredeem | Purchase a RAWR ticket
 
 `!gg Some Character, Alternate Character Name` starts a guessing game with two possible answers.
+
+`!ggex user123` will exempt user123 from the current game, not allowing them to guess.
 
 `!guess some character` performs a (case-insensitive) guess of "some character." Can be whispered.
 
