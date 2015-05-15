@@ -243,6 +243,7 @@ Misaka.prototype.processCommand = function(data, mode) {
     logger.warn('Non-master trying to use a master-only command', { username: username, command: command.name() });
   } else if(command && !command.canBeUsed(username)) {
     logger.warn('Cooldown prevented command execution', { username: username, command: command.name() });
+    this.whisper(roomname, username, 'Your command was ignored due to cooldown, please try again in a few seconds');
   } else if(command && command.isEnabled()) {
     command.used(username);
 
