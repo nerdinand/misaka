@@ -515,6 +515,7 @@ Misaka.prototype.fireRoomJoin = function(roomname) {
     if(!config) config = {};
 
     module.emit('join', {
+      client: misaka.getBot().getClientManager().getClient(roomname),
       config: config,
       database: misaka.getDbManager(),
       logger: logger,
