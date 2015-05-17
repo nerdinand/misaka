@@ -7,6 +7,13 @@
   "color": "#ac0000",
   "master": "MasterUser123",
 
+  "database": {
+    "host": "localhost",
+    "database": "misaka",
+    "username": "misaka",
+    "password": "password"
+  },
+
   "modules": {
     "Github": {
       "token": "SomeGithubAuthTokenHere"

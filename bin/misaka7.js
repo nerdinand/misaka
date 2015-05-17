@@ -331,7 +331,8 @@ Misaka.prototype.initConfig = function() {
  */
 Misaka.prototype.initDbManager = function() {
   this._db = new DbManager({
-    path: this.config.getDbPath()
+    // path: this.config.getDbPath()
+    config: this.config.getDb()
   });
 };
 
