@@ -158,6 +158,30 @@ Misaka.prototype.setupEvents = function(client) {
     misaka.print('*** ' + __('Room chat has been cleared by admin') + ' ***');
   });
 
+  socket.on('adultMode', function(enabled) {
+    logger.log('debug', 'adultMode', { enabled: enabled });
+  });
+
+  socket.on('commissionsAvailable', function(available) {
+    logger.log('debug', 'commissionsAvailable', { available: available });
+  });
+
+  socket.on('contentType', function() {
+    logger.log('debug', 'contentType');
+  });
+
+  socket.on('descriptionChange', function() {
+    logger.log('debug', 'descriptionChange');
+  });
+
+  socket.on('commissionInfoChanged', function() {
+    logger.log('debug', 'commissionInfoChanged');
+  });
+
+  socket.on('gameMode', function() {
+    logger.log('debug', 'gameMode');
+  });
+
   client.on('history', function(history) {
     console.log('--- ' + __('Begin History') + ' ---');
     history.forEach(function(data) {
