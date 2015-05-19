@@ -68,7 +68,7 @@ Misaka.prototype.initArgs = function() {
   if(argv.c) argv.config = argv.c;
 
   if(_.isUndefined(argv.config)) {
-    argv.config = Config.getDefaultPath('misaka7');
+    argv.config = Config.getDefaultPath('misaka');
   }
 };
 
@@ -581,8 +581,8 @@ Misaka.prototype.teardown = function(callback) {
 };
 
 Misaka.prototype.printHelp = function() {
-  console.log('Misaka - picarto.tv bot (for chat V7)');
-  console.log('usage: misaka7 [options]');
+  console.log('Misaka - picarto.tv bot');
+  console.log('usage: misaka [options]');
   console.log('');
   console.log('options:');
   console.log('  -h, --help    print this help message');
