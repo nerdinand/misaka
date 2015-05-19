@@ -41,6 +41,31 @@ raffleUsers     | Perform a raffle given some users
 setColor        | Set username color
 setName         | Query the server if a name can be set (if you have a name, kicks for exploiting)
 
+*These will NOT be sent on join, only if state changes - the PHP server will send these normally.*
+*API of some form is coming soon for things such as these*
+
+New incoming events (Available and working, but not yet implemented client-side - wait for the site update):
+
+Name                  | Description
+--------------------- | -----------
+adultMode             | New 18+ state (true/false)
+contentType           | If content type has changed (an AJAX request will need to be made)
+descriptionChange     | If channel description has changed (an AJAX request will need to be made)
+commissionsAvailable  | New commission availability state (true/false)
+commissionInfoChanged | If channel description has changed (an AJAX request will need to be made)
+gameMode              | Game mode state (true/false)
+
+New outgoing events (Available and working, but not yet implemented client-side - wait for the site update):
+
+Name                  | Description
+--------------------- | -----------
+adultMode             | Notify other clients of new 18+ state (true/false)
+contentType           | Notify other clients content type has changed
+descriptionChange     | Notify other clients channel description has changed
+commissionsAvailable  | Notify other clients of new commission availability state (true/false)
+commissionInfoChanged | Notify other clients channel description has changed
+gameMode              | Game mode state (true/false) - WILL NOT ALLOW CONFLICTING STATES, resets on channel offline to false. Will remind the streamer every 30 mins if they are in this state.
+
 
 Examples (Incoming)
 -------------------
