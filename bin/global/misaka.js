@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./../misaka.js');
+require('./../misaka7.js');
