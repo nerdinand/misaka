@@ -7,39 +7,39 @@ Incoming events (listened for by the client via `socket.on`):
 
 Name            | Description
 --------------- | -----------
-channelUsers    | Todo
-chatMode        | Todo
-clearChat       | Todo
-color           | Todo
-commandHelp     | Todo
-finishPoll      | Todo
-globalMsg       | Todo
-meMsg           | Todo
-modList         | Todo
-modToolsVisible | Todo
-nameResp        | Todo
-onlineState     | Todo
-pollVotes       | Todo
-raffleUsers     | Todo
-runPoll         | Todo
-showPoll        | Todo
-srvMsg          | Todo
-userMsg         | Todo
-voteResponse    | Todo
-whisper         | Todo
-wonRaffle       | Todo
+channelUsers    | Array of user objects for the userlist/ban list
+chatMode        | Marks chat as read-only if false (default not sent/true)
+clearChat       | Clear chat history
+color           | New colour notification for personal colour change sync between connections
+commandHelp     | Response from /help, array of cmd/desc objects
+finishPoll      | Notification when poll ends
+globalMsg       | Global server notification (sent by Picarto.TV admins)
+meMsg           | /me formatted messages
+modList         | Array of moderators, triggered by /sm or /showmods
+modToolsVisible | 0 = normal user, 1 = moderator, 2 = admin/streamer
+nameResp        | Response for choosing a name (true for success, string for reason name isn't available)
+onlineState     | Viewer count for the current stream (-1 = offline)
+pollVotes       | Poll vote data update (vote count)
+raffleUsers     | Contains an array of users able to be put in a raffle, triggered by /r or /raffle
+runPoll         | Notification to show poll details entry screen to streamer
+showPoll        | Show poll, object {name: "Question", options: [ {id: index/refid (used in pollVotes), option: "option name"} ] }
+srvMsg          | Server notification
+userMsg         | User message
+voteResponse    | Response to say user has voted, disables the "vote" buttons
+whisper         | Whisper response (enableReply = true if recepient, false if sender)
+wonRaffle       | Raffle ending, format {winner: "name", host: "streamer username"}
 
 Outgoing events (emitted by the client via `socket.emit`):
 
 Name            | Description
 --------------- | -----------
 chatMsg         | Send a chat message
-endPoll         | End a poll (?)
-pollOptions     | Specify options for a poll (?)
-pollVote        | Vote for a poll (?)
-raffleUsers     | Perform a raffle given some users (?)
+endPoll         | End a poll
+pollOptions     | Specify options for a poll
+pollVote        | Vote for a poll
+raffleUsers     | Perform a raffle given some users
 setColor        | Set username color
-setName         | Attempt to set name, with a `nameResp` event sent in response.
+setName         | Query the server if a name can be set (if you have a name, kicks for exploiting)
 
 
 Examples (Incoming)
