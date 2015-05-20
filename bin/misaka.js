@@ -15,15 +15,38 @@ var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'))
 var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
 var logger = require(path.join(__dirname, '..', 'lib', 'logger'));
 
-i18n.init({
-  lng: 'en-US',
-  shortcutFunction: 'sprintf',
-  // Disable key (.) and namespace (:) support to make i18next play
-  // more like i18n for now
-  keyseparator: undefined,
-  nsseparator: undefined
-});
 var t = i18n.t;
+
+var resources = {
+  'en-US': {
+    translation: {
+      connected: 'Connected',
+      disconnected: 'Disconnected',
+      chat: {
+        clear: 'Room chat has been cleared by admin'
+      },
+      command: {
+        disabled: 'Command (or parent module) is disabled: __command__',
+        notFound: 'No command found: __command__'
+      },
+      history: {
+        begin: 'History Begin',
+        end: 'History End'
+      },
+      stream: {
+        offline: '__channel__ is now online!',
+        online: '__channel__ is now offline.'
+      },
+      user: {
+        added: '__username__ has joined the room',
+        changed: '__username__ has changed in some way',
+        removed: '__username__ has left the room',
+        list: 'Users in room: __usernames__',
+        none: 'No users in the room'
+      }
+    }
+  }
+};
 
 var Misaka = function() {
   this.initArgs();
@@ -33,6 +56,7 @@ var Misaka = function() {
     process.exit();
   }
 
+  this.initI18n();
   this.initLoggerLevel();
 
   // Try to initialize config
@@ -102,6 +126,22 @@ Misaka.prototype.initBot = function() {
   });
 };
 
+Misaka.prototype.initI18n = function() {
+  var misaka = this;
+
+  i18n.init({
+    lng: 'en-US',
+    resStore: resources,
+    //shortcutFunction: 'sprintf',
+    // Disable key (.) and namespace (:) support to make i18next play
+    // more like i18n for now
+    //keyseparator: undefined,
+    //nsseparator: undefined
+  }, function() {
+    logger.log('debug', 'i18next initialized');
+  });
+};
+
 /**
  * Setup events for a client.
  * @param client Client
@@ -115,10 +155,18 @@ Misaka.prototype.setupEvents = function(client) {
   // Consider room joined
   this.fireRoomJoin(roomname);
 
-  console.log(t('Connected'));
+  // Todo: Move this later too?
+  if(i18n.isInitialized()) {
+    this.fireI18n();
+  } else {
+    logger.error('i18next still hasn\'t initialized, aborting');
+    throw new Error('i18next not initialized');
+  }
+
+  console.log(t('connected'));
 
   socket.on('disconnect', function() {
-    console.log(t('Disconnected'));
+    console.log(t('disconnected'));
   });
 
   socket.on('meMsg', function(data) {
@@ -162,7 +210,7 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   socket.on('clearChat', function() {
-    misaka.print('*** ' + t('Room chat has been cleared by admin') + ' ***');
+    misaka.print('*** ' + t('chat.clear') + ' ***');
   });
 
   socket.on('adultMode', function(enabled) {
@@ -190,20 +238,20 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   client.on('history', function(history) {
-    console.log('--- ' + t('Begin History') + ' ---');
+    console.log('--- ' + t('history.begin') + ' ---');
     history.forEach(function(data) {
       console.log(data.username + ': ' + data.msg);
     });
-    console.log('--- ' + t('End History') + ' ---');
+    console.log('--- ' + t('history.end') + ' ---');
   });
 
   var onlineWatcher = client.getOnlineWatcher();
 
   onlineWatcher.on('stateChanged', function(online) {
     if(online) {
-      misaka.send(t('%s is now online!', roomname));
+      misaka.send(t('stream.online', { channel: roomname }));
     } else {
-      misaka.send(t('%s is now offline.', roomname));
+      misaka.send(t('stream.offline', { channel: roomname }));
     }
   });
 
@@ -219,22 +267,24 @@ Misaka.prototype.setupEvents = function(client) {
     });
 
     if(usernames.length !== 0) {
-      console.log(t('Users in room: %s', usernames.join(', ')));
+      //console.log(t('Users in room: %s', usernames.join(', ')));
+      console.log(t('user.list', { usernames: usernames.join(', ') }));
     } else {
-      console.log(t('No users in the room'));
+      //console.log(t('No users in the room'));
+      console.log(t('user.none'));
     }
   });
 
   userList.on('userAdded', function(user) {
-    misaka.print('*** ' + t('%s has joined the room', user.username) + ' ***');
+    misaka.print('*** ' + t('user.added', { username: user.username }) + ' ***');
   });
 
   userList.on('userChanged', function(diff) {
-    misaka.print('*** ' + t('%s has changed in some way', diff[0].username) + ' ***');
+    misaka.print('*** ' + t('user.changed', { username: diff[0].username }) + ' ***');
   });
 
   userList.on('userRemoved', function(user) {
-    misaka.print('*** ' + t('%s has left the room', user.username) + ' ***');
+    misaka.print('*** ' + t('user.removed', { username: user.username }) + ' ***');
   });
 };
 
@@ -314,9 +364,9 @@ Misaka.prototype.processCommand = function(data, mode) {
       respond(result);
     }
   } else if(!command) {
-    misaka.print(t('No command found: %s', cmdname));
+    misaka.print(t('command.notFound', { command: cmdname }));
   } else if(!command.isEnabled()) {
-    misaka.print(t('Command (or parent module) is disabled: %s', cmdname));
+    misaka.print(t('command.disabled', { command: cmdname }));
   }
 };
 
@@ -532,6 +582,15 @@ Misaka.prototype.isCommandEnabled = function(command) {
 
   // If command has a module, check if that's enabled too
   return command.isEnabled(); // && (command.module ? command.module.enabled : true);
+};
+
+/**
+ * Fire the 'i18n' event for all modules, indicating that i18next has initialized.
+ */
+Misaka.prototype.fireI18n = function() {
+  this.modules.forEach(function(module) {
+    module.emit('i18n');
+  });
 };
 
 /**
