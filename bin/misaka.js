@@ -213,7 +213,9 @@ Misaka.prototype.setupEvents = function(client) {
   userList.on('initial', function(users) {
     var usernames = [];
     users.forEach(function(user) {
-      usernames.push(user.username);
+      if(!user.banned) {
+        usernames.push(user.username);
+      }
     });
 
     if(usernames.length !== 0) {
