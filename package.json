@@ -41,6 +41,7 @@
     "execSync": "~1.0.2",
     "github": "~0.2.3",
     "moment": "~2.8.4",
-    "plugapi": "git://github.com/saneki/plugAPI.git#async_login"
+    "plugapi": "git://github.com/saneki/plugAPI.git#async_login",
+    "toxcore": "~1.0.2"
   }
 }
