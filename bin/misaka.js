@@ -33,6 +33,9 @@ var resources = {
         begin: 'History Begin',
         end: 'History End'
       },
+      raffle: {
+        won: '__winner__ won __host__\'s raffle'
+      },
       stream: {
         offline: '__channel__ is now online!',
         online: '__channel__ is now offline.'
@@ -221,6 +224,10 @@ Misaka.prototype.setupEvents = function(client) {
 
   socket.on('clearChat', function() {
     misaka.print('*** ' + t('chat.clear') + ' ***');
+  });
+
+  socket.on('wonRaffle', function(data) {
+    misaka.print('*** ' + t('raffle.won', data) + ' ***');
   });
 
   socket.on('adultMode', function(enabled) {
