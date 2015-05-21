@@ -43,6 +43,10 @@ var resources = {
         removed: '__username__ has left the room',
         list: 'Users in room: __usernames__',
         none: 'No users in the room'
+      },
+      whisper: {
+        incoming: '__username__ whispered: __message__',
+        outgoing: 'Whispered to __username__: __message__'
       }
     }
   }
@@ -174,13 +178,19 @@ Misaka.prototype.setupEvents = function(client) {
   });
 
   socket.on('whisper', function(data) {
-    var username = data.username,
+    // If enableReply === false, is from Misaka
+    var fromMe = !data.enableReply,
+        username = data.username,
         message = data.msg;
 
-    misaka.print(username + ' whispered: ' + message);
+    if(fromMe) {
+      misaka.print(t('whisper.outgoing', { username: username, message: message }));
+    } else {
+      misaka.print(t('whisper.incoming', { username: username, message: message }));
+    }
 
     // Check if command
-    if(misaka.cmdproc.isCommand(username, message)
+    if(!fromMe && misaka.cmdproc.isCommand(username, message)
         && username.toLowerCase() != misaka.getConfig().getUsername().toLowerCase()) {
       misaka.processCommand(data, 'whisper');
     }
