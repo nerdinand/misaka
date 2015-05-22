@@ -37,8 +37,8 @@ var resources = {
         won: '__winner__ won __host__\'s raffle'
       },
       stream: {
-        offline: '__channel__ is now online!',
-        online: '__channel__ is now offline.'
+        offline: '__channel__ is now offline.',
+        online: '__channel__ is now online!'
       },
       user: {
         added: '__username__ has joined the room',
@@ -264,12 +264,17 @@ Misaka.prototype.setupEvents = function(client) {
 
   var onlineWatcher = client.getOnlineWatcher();
 
-  onlineWatcher.on('stateChanged', function(online) {
+  onlineWatcher.on('mainStateChanged', function(online) {
+    logger.log('debug', 'mainStateChanged detected', { online: online });
     if(online) {
       misaka.send(t('stream.online', { channel: roomname }));
     } else {
       misaka.send(t('stream.offline', { channel: roomname }));
     }
+  });
+
+  onlineWatcher.on('stateChanged', function(channel, online) {
+    logger.log('debug', 'stateChanged detected', { channel: channel, online: online });
   });
 
   // Setup userlist events

@@ -92,11 +92,13 @@ socket.on('nameResp', function(data) {
 Emitted when the viewer count changes. If `viewers` is `-1`, the stream went offline.
 
 ```
+// Note: when joining an online channel, the 'channel' key may be excluded
+// example data: { channel: 'channelName', viewers: 2 }
 socket.on('onlineState', function(data) {
   if(data.viewers === -1) {
-    console.log('Stream is offline');
+    console.log(data.channel + '\'s stream is offline');
   } else {
-    console.log('Current viewers: ' + data.viewers);
+    console.log('Current viewers for ' + data.channel + ': ' + data.viewers);
   }
 });
 ```
