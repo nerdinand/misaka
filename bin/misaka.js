@@ -81,7 +81,7 @@ var Misaka = function() {
   // For now, commands just an object: name -> module with onCommand
   this.helper = new ModuleHelper();
   this.cmdproc = new CommandProcessor();
-  this.modules = new ModuleManager({}, 7);
+  this.modules = new ModuleManager(this, {}, 7);
   this.initModules();
 
   // Message queues for rooms
