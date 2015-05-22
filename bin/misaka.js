@@ -547,6 +547,14 @@ Misaka.prototype.getChatVersion = function() {
 };
 
 /**
+ * Get the command processor.
+ * @return {CommandProcessor} processor
+ */
+Misaka.prototype.getCommandProcessor = function() {
+  return this.cmdproc;
+};
+
+/**
  * Get the config object.
  * @return config object
  */
