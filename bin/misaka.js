@@ -180,6 +180,10 @@ Misaka.prototype.setupEvents = function(client) {
     misaka.print('** ' + data.username + ' ' + data.msg + ' **');
   });
 
+  socket.on('srvMsg', function(msg) {
+    misaka.print('** [Server] ' + msg + ' **');
+  });
+
   socket.on('whisper', function(data) {
     // If enableReply === false, is from Misaka
     var fromMe = !data.enableReply,
