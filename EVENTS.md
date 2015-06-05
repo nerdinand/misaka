@@ -66,6 +66,13 @@ commissionsAvailable  | Notify other clients of new commission availability stat
 commissionInfoChanged | Notify other clients channel description has changed
 gameMode              | Game mode state (true/false) - WILL NOT ALLOW CONFLICTING STATES, resets on channel offline to false. Will remind the streamer every 30 mins if they are in this state.
 
+Other new events:
+
+Name                  | Description
+--------------------- | -----------
+clearUser             | Clear all messages by a user
+removeMessage         | Remove a specified message
+
 
 Examples (Incoming)
 -------------------
