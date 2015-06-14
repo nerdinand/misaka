@@ -13,6 +13,7 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 ## Commands sorted by module
 
 - [mod_derpibooru](#mod_derpibooru)
+- [mod_email](#mod_email)
 - [mod_lumineko](#mod_lumineko)
 - [mod_mediawiki](#mod_mediawiki)
 - [mod_plugdj](#mod_plugdj)
@@ -29,6 +30,20 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 
 `!derpi applejack, twilight sparkle` will get a random image with the tags `applejack` and
 `twilight sparkle`.
+
+
+### mod_email
+
+| Command | Description
+| ------- | ----------------------------------
+| email   | Set an e-mail address as a user
+| unemail | Remove an e-mail address as a user
+
+`!email` by itself will inform the user whether or not their e-mail address is on the list.
+
+`!email user@website.com` will add the specified address to the list for that user.
+
+`!unemail` will remove the user's e-mail address from the list, if any.
 
 
 ### mod_lumineko
