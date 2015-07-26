@@ -1,3 +1,6 @@
+// Fix for recent connection issue
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 var async = require('async');
 var fs = require('fs');
 var i18n = require('i18next');
