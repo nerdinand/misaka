@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Chat client and bot for picarto.tv",
   "keywords": ["bot", "chat", "client", "misaka", "picarto", "picarto.tv"],
+  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/saneki/misaka.git"
