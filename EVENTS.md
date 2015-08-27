@@ -71,11 +71,31 @@ Other new events:
 Name                  | Description
 --------------------- | -----------
 clearUser             | Clear all messages by a user
-removeMessage         | Remove a specified message
+removeMsg             | Remove a specified message
 
 
 Examples (Incoming)
 -------------------
+
+### clearChat
+
+Emitted when the chat has been cleared.
+
+```js
+socket.on('clearChat', function(data) {
+  console.log(data.executioner + ' cleared the chat');
+});
+```
+
+### clearUser
+
+Emitted when all messages from a specific user have been removed.
+
+```js
+socket.on('clearUser', function(data) {
+  console.log(data.executioner + ' removed all messages from user ' + data.user);
+});
+```
 
 ### nameResp
 
@@ -107,6 +127,16 @@ socket.on('onlineState', function(data) {
   } else {
     console.log('Current viewers for ' + data.channel + ': ' + data.viewers);
   }
+});
+```
+
+### removeMsg
+
+Emitted when a specific message has been removed.
+
+```js
+socket.on('removeMsg', function(data) {
+  console.log(data.executioner + ' removed message with id ' + data.id);
 });
 ```
 
