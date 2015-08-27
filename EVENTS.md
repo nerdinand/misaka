@@ -101,7 +101,7 @@ socket.on('clearUser', function(data) {
 
 Response event for `setName`.
 
-```
+```js
 socket.on('nameResp', function(data) {
   if(data === true) {
     // Name was successfully set
@@ -118,7 +118,7 @@ socket.on('nameResp', function(data) {
 
 Emitted when the viewer count changes. If `viewers` is `-1`, the stream went offline.
 
-```
+```js
 // Note: when joining an online channel, the 'channel' key may be excluded
 // example data: { channel: 'channelName', viewers: 2 }
 socket.on('onlineState', function(data) {
@@ -144,7 +144,7 @@ socket.on('removeMsg', function(data) {
 
 Emitted when a whisper is received from another user.
 
-```
+```js
 socket.on('whisper', function(data) {
   console.log(data.username + ' whispered: ' + data.msg);
 });
@@ -158,7 +158,7 @@ Examples (Outgoing)
 
 Send a chat message.
 
-```
+```js
 socket.emit('chatMsg', { msg: 'Message text here!' });
 ```
 
@@ -166,7 +166,7 @@ socket.emit('chatMsg', { msg: 'Message text here!' });
 
 Start a poll.
 
-```
+```js
 socket.emit('pollOptions', {
   name: 'Poll name',
   options: [
@@ -182,7 +182,7 @@ socket.emit('pollOptions', {
 Perform a raffle using a list of names. The names don't have to
 be of users in the chat.
 
-```
+```js
 socket.emit('raffleUsers', ['User1', 'User2', 'User3']);
 ```
 
@@ -191,7 +191,7 @@ socket.emit('raffleUsers', ['User1', 'User2', 'User3']);
 Request to set the client's username color. Expects exactly 6 hexadecimal characters
 indicating color. Anything else will be ignored.
 
-```
+```js
 // Set color to #ff0000
 socket.emit('setColor', 'ff0000');
 
@@ -204,6 +204,6 @@ socket.emit('setColor', '123ABC');
 Attempt to set the client's username. Will result in a kick if a name has already
 been set.
 
-```
+```js
 socket.emit('setName', 'User123');
 ```
