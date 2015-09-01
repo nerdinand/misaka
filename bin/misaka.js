@@ -26,7 +26,7 @@ var resources = {
       connected: 'Connected',
       disconnected: 'Disconnected',
       chat: {
-        clear: 'Room chat has been cleared by admin'
+        clear: 'Room chat has been cleared by __executioner__'
       },
       command: {
         disabled: 'Command (or parent module) is disabled: __command__',
@@ -35,6 +35,9 @@ var resources = {
       history: {
         begin: 'History Begin',
         end: 'History End'
+      },
+      message: {
+        remove: 'Message __id__ has been removed by __executioner__'
       },
       raffle: {
         won: '__winner__ won __host__\'s raffle'
@@ -47,6 +50,7 @@ var resources = {
         added: '__username__ has joined the room',
         changed: '__username__ has changed in some way',
         removed: '__username__ has left the room',
+        clear: 'All messages from __user__ have been removed by __executioner__',
         list: 'Users in room: __usernames__',
         none: 'No users in the room'
       },
@@ -229,8 +233,16 @@ Misaka.prototype.setupEvents = function(client) {
     }
   });
 
-  socket.on('clearChat', function() {
-    misaka.print('*** ' + t('chat.clear') + ' ***');
+  socket.on('clearChat', function(data) {
+    misaka.print('*** ' + t('chat.clear', data) + ' ***');
+  });
+
+  socket.on('removeMsg', function(data) {
+    logger.log('debug', t('message.remove', data));
+  });
+
+  socket.on('clearUser', function(data) {
+    logger.log('debug', t('user.clear', data));
   });
 
   socket.on('wonRaffle', function(data) {
