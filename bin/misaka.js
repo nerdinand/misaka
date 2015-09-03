@@ -1,6 +1,3 @@
-// Fix for recent connection issue
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 var async = require('async');
 var fs = require('fs');
 var i18n = require('i18next');
@@ -73,6 +70,11 @@ var Misaka = function() {
   this.initI18n();
   this.initLoggerLevel();
 
+  if(!this.argv['tls-reject-unauthorized']) {
+    logger.log('debug', 'Disabling NODE_TLS_REJECT_UNAUTHORIZED');
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  }
+
   // Try to initialize config
   if(!this.initConfig()) {
     logger.error('Couldn\'t read config file, aborting');
@@ -106,15 +108,21 @@ var Misaka = function() {
 };
 
 Misaka.prototype.initArgs = function() {
-  var argv = this.argv = minimist(process.argv.slice(2));
-
-  if(argv.h) argv.help = true;
-  if(argv.r) argv.room = argv.r;
-  if(argv.c) argv.config = argv.c;
-
-  if(_.isUndefined(argv.config)) {
-    argv.config = Config.getDefaultPath('misaka');
-  }
+  var argv = this.argv = minimist(process.argv.slice(2), {
+    alias: {
+      help: ['h'],
+      room: ['r'],
+      config: ['c'],
+      'no-tls-reject-unauthorized': ['t']
+    },
+    boolean: ['help', 'tls-reject-unauthorized'],
+    string: ['config', 'room'],
+    default: {
+      config: Config.getDefaultPath('misaka'),
+      help: false,
+      'tls-reject-unauthorized': true
+    }
+  });
 };
 
 /**
@@ -701,6 +709,7 @@ Misaka.prototype.printHelp = function() {
   console.log('options:');
   console.log('  -h, --help    print this help message');
   console.log('  -r, --room    room to join');
+  console.log('  -t, --no-tls-reject-unauthorized');
   console.log('  --debug       enable debug logger');
 };
 
