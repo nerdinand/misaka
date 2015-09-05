@@ -70,6 +70,11 @@ var Misaka = function() {
   this.initI18n();
   this.initLoggerLevel();
 
+  if(this.argv['clear-sockets']) {
+    logger.log('debug', 'Clearing sockets');
+    this.clearSockets();
+  }
+
   if(!this.argv['tls-reject-unauthorized']) {
     logger.log('debug', 'Disabling NODE_TLS_REJECT_UNAUTHORIZED');
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -113,13 +118,15 @@ Misaka.prototype.initArgs = function() {
       help: ['h'],
       room: ['r'],
       config: ['c'],
+      'clear-sockets': ['s'],
       'no-tls-reject-unauthorized': ['t']
     },
-    boolean: ['help', 'tls-reject-unauthorized'],
+    boolean: ['help', 'tls-reject-unauthorized', 'clear-sockets'],
     string: ['config', 'room'],
     default: {
       config: Config.getDefaultPath('misaka'),
       help: false,
+      'clear-sockets': false,
       'tls-reject-unauthorized': true
     }
   });
@@ -162,6 +169,13 @@ Misaka.prototype.initI18n = function() {
   }, function() {
     logger.log('debug', 'i18next initialized');
   });
+};
+
+/**
+ * Clear all sockets.
+ */
+Misaka.prototype.clearSockets = function() {
+  SocketInterface.clear();
 };
 
 /**
@@ -709,6 +723,7 @@ Misaka.prototype.printHelp = function() {
   console.log('options:');
   console.log('  -h, --help    print this help message');
   console.log('  -r, --room    room to join');
+  console.log('  -s, --clear-sockets');
   console.log('  -t, --no-tls-reject-unauthorized');
   console.log('  --debug       enable debug logger');
 };
