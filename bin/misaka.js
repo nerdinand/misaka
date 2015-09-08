@@ -130,6 +130,9 @@ Misaka.prototype.initArgs = function() {
       'tls-reject-unauthorized': true
     }
   });
+
+  if(argv['no-tls-reject-unauthorized'])
+    argv['tls-reject-unauthorized'] = false;
 };
 
 /**
