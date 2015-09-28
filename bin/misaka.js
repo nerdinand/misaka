@@ -299,6 +299,18 @@ Misaka.prototype.setupEvents = function(client) {
     logger.log('debug', 'gameMode');
   });
 
+  socket.on('warnAdult', function() {
+    logger.log('debug', 'warnAdult');
+  });
+
+  socket.on('warnMovies', function() {
+    logger.log('debug', 'warnMovies');
+  });
+
+  socket.on('multiStatus', function(a) {
+    logger.log('debug', 'multiStatus', a);
+  });
+
   client.on('history', function(history) {
     console.log('--- ' + t('history.begin') + ' ---');
     history.forEach(function(data) {
