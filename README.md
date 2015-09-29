@@ -1,6 +1,8 @@
 Misaka
 ======
 
+[![Dependency Status](https://david-dm.org/saneki/misaka.svg)](https://david-dm.org/saneki/misaka) [![optionalDependency Status](https://david-dm.org/saneki/misaka/optional-status.svg)](https://david-dm.org/saneki/misaka#info=optionalDependencies)
+
 Misaka is a chat client/bot for [Picarto.tv].
 
 To get Misaka up and running, first install the dependencies:
