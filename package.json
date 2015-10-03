@@ -44,7 +44,6 @@
     "moment": "~2.10.6",
     "nodemailer": "~1.5.0",
     "nodemailer-smtp-pool": "~1.1.1",
-    "plugapi": "~4.2.0",
     "toxcore": "~1.2.0"
   }
 }
