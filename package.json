@@ -21,29 +21,29 @@
     "start": "node ./bin/misaka.js"
   },
   "dependencies": {
-    "async": "~1.4.2",
-    "bluebird": "~2.10.1",
-    "html-entities": "~1.1.3",
-    "i18next": "~1.10.4",
-    "minimist": "~1.2.0",
-    "mysql": "~2.9.0",
-    "nodemw": "~0.7.3",
-    "osenv": "~0.1.3",
-    "pluralize": "~1.2.1",
-    "request": "~2.64.0",
-    "sequelize": "~3.9.0",
-    "socket.io-client": "~1.3.7",
-    "tough-cookie": "~2.0.0",
-    "underscore": "~1.8.3",
-    "underscore.string": "~3.2.2",
-    "winston": "~1.0.2"
+    "async": "1",
+    "bluebird": "2",
+    "html-entities": "1",
+    "i18next": "1",
+    "minimist": "1",
+    "mysql": "2",
+    "nodemw": "0.7",
+    "osenv": "0.1",
+    "pluralize": "1",
+    "request": "2",
+    "sequelize": "3",
+    "socket.io-client": "1",
+    "tough-cookie": "2",
+    "underscore": "1",
+    "underscore.string": "3",
+    "winston": "1"
   },
   "optionalDependencies": {
-    "execSync": "~1.0.2",
-    "github": "~0.2.4",
-    "moment": "~2.10.6",
-    "nodemailer": "~1.5.0",
-    "nodemailer-smtp-pool": "~1.1.1",
-    "toxcore": "~1.2.0"
+    "execSync": "1",
+    "github": "0.2",
+    "moment": "2",
+    "nodemailer": "1",
+    "nodemailer-smtp-pool": "1",
+    "toxcore": "1"
   }
 }
