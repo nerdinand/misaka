@@ -7,7 +7,6 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 
 - [mod_derpibooru](#mod_derpibooru) - !derpi
 - [mod_mediawiki](#mod_mediawiki) - !wiki
-- [mod_plugdj](#mod_plugdj) - !dj, !song, !songurl
 
 
 ## Commands sorted by module
@@ -16,7 +15,6 @@ If you are looking for the commands for lumi's game, go [here](#mod_rawr).
 - [mod_email](#mod_email)
 - [mod_lumineko](#mod_lumineko)
 - [mod_mediawiki](#mod_mediawiki)
-- [mod_plugdj](#mod_plugdj)
 - [mod_rawr](#mod_rawr)
 
 
@@ -66,17 +64,6 @@ admin and mod only).
 | wiki    | Get basic wiki information on some subject
 
 `!wiki cat` will get basic information about cats from Wikipedia.
-
-
-### mod_plugdj
-
-| Command    | Description
-| ---------- | -------------------------
-| dj         | Get the current dj
-| song       | Get the current song name
-| songurl    | Get the current song url
-| video      | Alias for song
-| videourl   | Alias for songurl
 
 
 ### mod_rawr
