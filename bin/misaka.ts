@@ -7,6 +7,7 @@ import minimist = require('minimist');
 import path = require('path');
 
 import { Config } from '../lib/Config';
+import logger from '../lib/logger';
 
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
@@ -16,7 +17,6 @@ var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'));
 var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
-var logger = require(path.join(__dirname, '..', 'lib', 'logger'));
 
 var t = function(str: string, data?: any) {
   if (data) {
