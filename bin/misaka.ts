@@ -5,9 +5,9 @@ import fs = require('fs');
 import i18n = require('i18next');
 import minimist = require('minimist');
 import path = require('path');
-//import _ = require('underscore');
 
-var Config = require(path.join(__dirname, '..', 'lib', 'config')).Config;
+import { Config } from '../lib/Config';
+
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Bot = require(path.join(__dirname, '..', 'lib', 'bot'));
@@ -72,7 +72,7 @@ class Misaka {
 
   private argv: any;
   private bot: any;
-  private config: any;
+  private config: Config;
   private helper: any;
   private cmdproc: any;
   private modules: any;
@@ -546,11 +546,11 @@ class Misaka {
    */
   initLogger() {
     // Set logging config stuff
-    if(this.config.logging) {
-      if(this.config.logging.detection !== undefined) {
-        logger.enableDetection(!!this.config.logging.detection);
-      }
-    }
+    //if(this.config.logging) {
+    //  if(this.config.logging.detection !== undefined) {
+    //    logger.enableDetection(!!this.config.logging.detection);
+    //  }
+    //}
 
     if(this.argv.debug) {
       logger.setLevel('debug');
@@ -638,7 +638,7 @@ class Misaka {
    * Get the config object.
    * @return config object
    */
-  getConfig(): any {
+  getConfig(): Config {
     return this.config;
   }
 
