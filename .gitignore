@@ -8,3 +8,7 @@ lib/modules/private/*
 
 logs/*
 !logs/.gitkeep
+
+# Typescript
+build/*
+.tscache/*

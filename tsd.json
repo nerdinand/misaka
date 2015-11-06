@@ -1,0 +1,24 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "async/async.d.ts": { "commit": "0dd29bf" },
+    "bluebird/bluebird.d.ts": { "commit": "0dd29bf" },
+    "form-data/form-data.d.ts": { "commit": "0dd29bf" },
+    "i18next/i18next.d.ts": { "commit": "0dd29bf" },
+    "jquery/jquery.d.ts": { "commit": "0dd29bf" },
+    "lodash/lodash.d.ts": { "commit": "0dd29bf" },
+    "minimist/minimist.d.ts": { "commit": "0dd29bf" },
+    "mysql/mysql.d.ts": { "commit": "0dd29bf" },
+    "node/node.d.ts": { "commit": "0dd29bf" },
+    "pluralize/pluralize.d.ts": { "commit": "0dd29bf" },
+    "request/request.d.ts": { "commit": "0dd29bf" },
+    "sequelize/sequelize.d.ts": { "commit": "0dd29bf" },
+    "socket.io-client/socket.io-client.d.ts": { "commit": "0dd29bf" },
+    "validator/validator.d.ts": { "commit": "0dd29bf" },
+    "winston/winston.d.ts": { "commit": "0dd29bf" }
+  }
+}
