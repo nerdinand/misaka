@@ -1,8 +1,9 @@
 import fs = require('fs');
 import path = require('path');
 
+import logger from '../lib/Logger';
+
 var osenv = require('osenv'); // No .d.ts for osenv?
-var logger = require(path.join(__dirname, 'logger'));
 
 var DEFAULT_COLOR: string = '#000000';
 
@@ -127,7 +128,7 @@ export class Config {
    */
   getRooms(): string[] {
     var room: string = this.getIfString(this.obj.room);
-    if(room !== undefined) {
+    if(room != null) {
       return [room];
     } else {
       return [];
@@ -165,9 +166,7 @@ export class Config {
    * @param room Room name
    */
   setRoom(room: string) {
-    if(room != null) {
-      this.obj.room = room;
-    }
+    this.obj.room = room;
   }
 
   /**
@@ -176,7 +175,8 @@ export class Config {
    * @return o if o is a string, otherwise undefined
    */
   getIfString(o: any): string {
-    if(o instanceof String) return <string>o;
+    if (typeof o === 'string') return <string>o;
+    else return null;
   }
 
   /**

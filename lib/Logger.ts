@@ -8,7 +8,6 @@ class Logger {
   private errors: winston.LoggerInstance;
   private detection: any;
 
-
   constructor() {
     this.initWinston();
 
@@ -118,7 +117,7 @@ class Logger {
 
   error(...args: any[]) {
     this.console.error.apply(this.console, args);
-  };
+  }
 
   /**
    * Set the logging level of the console logger.

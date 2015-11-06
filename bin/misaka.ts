@@ -7,7 +7,7 @@ import minimist = require('minimist');
 import path = require('path');
 
 import { Config } from '../lib/Config';
-import logger from '../lib/logger';
+import logger from '../lib/Logger';
 
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
 var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
@@ -68,9 +68,18 @@ var resources: IResourceStore = {
   }
 };
 
+interface MisakaArguments {
+  'clear-sockets'?: boolean;
+  config?: string;
+  debug?: boolean;
+  help?: boolean;
+  room?: string;
+  'tls-reject-unauthorized'?: boolean;
+}
+
 class Misaka {
 
-  private argv: any;
+  private argv: MisakaArguments;
   private bot: any;
   private config: Config;
   private helper: any;
@@ -123,7 +132,7 @@ class Misaka {
     this.queues = {};
 
     // argv overrides config
-    if(this.argv.room) this.config.setRoom(this.argv.room);
+    if(this.argv.room != null) this.config.setRoom(this.argv.room);
 
     if(this.config.getRooms().length === 0) {
       logger.error('No room to join specified, aborting');
@@ -134,7 +143,7 @@ class Misaka {
   }
 
   initArgs() {
-    var argv = this.argv = minimist(process.argv.slice(2), {
+    var argv: MisakaArguments = this.argv = <MisakaArguments>minimist(process.argv.slice(2), {
       alias: {
         help: ['h'],
         room: ['r'],
