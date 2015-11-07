@@ -2,7 +2,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     ts: {
       default: {
-        src: ['bin/misaka.ts', 'lib/Config.ts', 'lib/logger.ts'],
+        src: ['bin/misaka.ts', 'lib/Config.ts', 'lib/Logger.ts',
+              'lib/Command.ts', 'lib/Module.ts'],
         outDir: 'build',
         options: {
           target: 'es5',
