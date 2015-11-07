@@ -7,6 +7,7 @@ import minimist = require('minimist');
 import path = require('path');
 
 import { Config } from '../lib/Config';
+import { ModuleManager } from '../lib/ModuleManager';
 import logger from '../lib/Logger';
 
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
@@ -15,7 +16,6 @@ var Bot = require(path.join(__dirname, '..', 'lib', 'bot'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
-var ModuleManager = require(path.join(__dirname, '..', 'lib', 'module_manager'));
 var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
 
 var t = function(str: string, data?: any) {
@@ -77,8 +77,7 @@ interface MisakaArguments {
   'tls-reject-unauthorized'?: boolean;
 }
 
-class Misaka {
-
+export class Misaka {
   private argv: MisakaArguments;
   private bot: any;
   private config: Config;

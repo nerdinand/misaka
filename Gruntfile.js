@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     ts: {
       default: {
         src: ['bin/misaka.ts', 'lib/Config.ts', 'lib/Logger.ts',
-              'lib/Command.ts', 'lib/Module.ts'],
+              'lib/Command.ts', 'lib/Module.ts', 'lib/ModuleManager.ts'],
         outDir: 'build',
         options: {
           target: 'es5',
