@@ -8,10 +8,10 @@ import path = require('path');
 
 import { Config } from '../lib/Config';
 import { ModuleManager } from '../lib/ModuleManager';
+import * as Picarto from '../lib/Picarto';
 import logger from '../lib/Logger';
 
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
-var Picarto = require(path.join(__dirname, '..', 'lib', 'picarto'));
 var Bot = require(path.join(__dirname, '..', 'lib', 'bot'));
 var CommandProcessor = require(path.join(__dirname, '..', 'lib', 'command_processor'));
 var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
@@ -178,7 +178,7 @@ export class Misaka {
       unescape: true
     });
 
-    bot.connect(function(error, client) {
+    bot.connect(function(error, client: Picarto.Client) {
       if(!error) {
         misaka.setupEvents(client);
       } else {
@@ -213,7 +213,7 @@ export class Misaka {
    * Setup events for a client.
    * @param client Client
    */
-  setupEvents(client: any) {
+  setupEvents(client: Picarto.Client) {
     var misaka: Misaka = this,
         socket: any = client.getSocket(),
         roomname: string = misaka.config.getRooms()[0];
@@ -608,7 +608,7 @@ export class Misaka {
    * Initialize the message queue for a given room.
    * @param client Client the message queue is for
    */
-  initMessageQueue(client: any) {
+  initMessageQueue(client: Picarto.Client) {
     var queue = new MessageQueue({
       send: Picarto.Client.prototype.sendMessage.bind(client),
       wait: 1000
