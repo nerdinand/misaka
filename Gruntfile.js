@@ -4,7 +4,8 @@ module.exports = function(grunt) {
       default: {
         src: ['bin/misaka.ts', 'lib/Config.ts', 'lib/Logger.ts',
               'lib/Command.ts', 'lib/Module.ts', 'lib/ModuleManager.ts',
-              'lib/UserList.ts', 'lib/OnlineWatcher.ts', 'lib/Picarto.ts'],
+              'lib/UserList.ts', 'lib/OnlineWatcher.ts', 'lib/Picarto.ts',
+              'lib/CommandProcessor.ts'],
         outDir: 'build',
         options: {
           target: 'es5',
