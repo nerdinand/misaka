@@ -42,7 +42,7 @@ export class Client {
    * @param token Auth token (optional)
    * @return socket
    */
-  connectWithToken(token: string): any {
+  connectWithToken(token?: string): any {
     // Make sure we have a token
     if(!token) {
       token = this.token;
