@@ -11,10 +11,10 @@ import { ModuleManager } from '../lib/ModuleManager';
 import * as Picarto from '../lib/Picarto';
 import Bot from '../lib/Bot';
 import CommandProcessor from '../lib/CommandProcessor';
+import MessageQueue from '../lib/MessageQueue';
 import logger from '../lib/Logger';
 
 var DbManager = require(path.join(__dirname, '..', 'lib', 'db_manager'));
-var MessageQueue = require(path.join(__dirname, '..', 'lib', 'message_queue'));
 var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
 
