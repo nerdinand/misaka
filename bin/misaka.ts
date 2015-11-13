@@ -13,9 +13,9 @@ import Bot from '../lib/Bot';
 import CommandProcessor from '../lib/CommandProcessor';
 import DbManager from '../lib/DbManager';
 import MessageQueue from '../lib/MessageQueue';
+import ModuleHelper from '../lib/ModuleHelper';
 import logger from '../lib/Logger';
 
-var ModuleHelper = require(path.join(__dirname, '..', 'lib', 'module_helper'));
 var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
 
 var t = function(str: string, data?: any) {

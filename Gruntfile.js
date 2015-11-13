@@ -6,7 +6,7 @@ module.exports = function(grunt) {
               'lib/Command.ts', 'lib/Module.ts', 'lib/ModuleManager.ts',
               'lib/UserList.ts', 'lib/OnlineWatcher.ts', 'lib/Picarto.ts',
               'lib/CommandProcessor.ts', 'lib/ClientManager.ts', 'lib/Bot.ts',
-              'lib/MessageQueue.ts', 'lib/DbManager.ts'],
+              'lib/MessageQueue.ts', 'lib/DbManager.ts', 'lib/ModuleHelper.ts'],
         outDir: 'build',
         options: {
           target: 'es5',
