@@ -1,7 +1,7 @@
 import events = require('events');
 var _ = require('underscore');
 
-import { Command } from './Command';
+import Command from './Command';
 
 /**
  * Construct a module from whatever was exported by a module
@@ -176,3 +176,5 @@ export class Module {
     return this.emitter.emit(event, args);
   }
 }
+
+export default Module;

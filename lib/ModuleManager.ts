@@ -190,7 +190,7 @@ export class ModuleManager {
    * will only look for filenames matching mod_*.js.
    * @param dir Path to look in (optional)
    */
-  loadFromDirectory(dir: string) {
+  loadFromDirectory(dir?: string) {
     var manager = this,
         loaded = [];
 

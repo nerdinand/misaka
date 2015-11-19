@@ -10,9 +10,11 @@ import { Config } from '../lib/Config';
 import { ModuleManager } from '../lib/ModuleManager';
 import * as Picarto from '../lib/Picarto';
 import Bot from '../lib/Bot';
+import Command from '../lib/Command';
 import CommandProcessor from '../lib/CommandProcessor';
 import DbManager from '../lib/DbManager';
 import MessageQueue from '../lib/MessageQueue';
+import Module from '../lib/Module';
 import ModuleHelper from '../lib/ModuleHelper';
 import logger from '../lib/Logger';
 import SocketInterface from '../lib/interfaces/SocketInterface';
@@ -78,14 +80,14 @@ interface MisakaArguments {
 
 export class Misaka {
   private argv: MisakaArguments;
-  private bot: any;
+  private bot: Bot;
   private config: Config;
-  private helper: any;
-  private cmdproc: any;
-  private modules: any;
+  private helper: ModuleHelper;
+  private cmdproc: CommandProcessor;
+  private modules: ModuleManager;
   private queues: any;
-  private _db: any;
-  private _interface: any;
+  private _db: DbManager;
+  private _interface: SocketInterface;
 
   constructor() {
     this.initArgs();
@@ -520,7 +522,7 @@ export class Misaka {
    * Get the database manager instance.
    * @return {DbManager} Database manager instance
    */
-  getDbManager(): any {
+  getDbManager(): DbManager {
     return this._db;
   };
 
@@ -621,7 +623,7 @@ export class Misaka {
    * Get the bot instance.
    * @return bot instance
    */
-  getBot(): any {
+  getBot(): Bot {
     return this.bot;
   };
 
@@ -637,7 +639,7 @@ export class Misaka {
    * Get the command processor.
    * @return {CommandProcessor} processor
    */
-  getCommandProcessor(): any {
+  getCommandProcessor(): CommandProcessor {
     return this.cmdproc;
   };
 
@@ -661,7 +663,7 @@ export class Misaka {
    * Get the module manager.
    * @return Module manager
    */
-  getModuleManager(): any {
+  getModuleManager(): ModuleManager {
     return this.modules;
   };
 
@@ -670,7 +672,7 @@ export class Misaka {
    * @param name Command name
    * @return command instance if found, undefined if not found
    */
-  getCommand(name: string): any {
+  getCommand(name: string): Command {
     return this.modules.getCommand(name.toLowerCase());
   }
 
@@ -679,7 +681,7 @@ export class Misaka {
    * @param name Module name
    * @return module instance if found, undefined if not found
    */
-  getModule(name: string): any {
+  getModule(name: string): Module {
     return this.modules.get(name.toLowerCase());
   }
 
