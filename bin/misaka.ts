@@ -15,8 +15,7 @@ import DbManager from '../lib/DbManager';
 import MessageQueue from '../lib/MessageQueue';
 import ModuleHelper from '../lib/ModuleHelper';
 import logger from '../lib/Logger';
-
-var SocketInterface = require(path.join(__dirname, '..', 'lib', 'interfaces', 'socket_interface'));
+import SocketInterface from '../lib/interfaces/SocketInterface';
 
 var t = function(str: string, data?: any) {
   if (data) {

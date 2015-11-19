@@ -17,7 +17,9 @@ module.exports = function(grunt) {
           'lib/ModuleManager.ts',
           'lib/OnlineWatcher.ts',
           'lib/Picarto.ts',
-          'lib/UserList.ts'
+          'lib/UserList.ts',
+          'lib/Util.ts',
+          'lib/interfaces/SocketInterface.ts'
         ],
         outDir: 'build',
         options: {
