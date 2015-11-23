@@ -213,7 +213,7 @@ export class Client {
    * Wrapper for emitter.emit.
    */
   emit(event: string, ...args: any[]): boolean {
-    return this.emitter.emit(event, args);
+    return <boolean>this.emitter.emit.apply(this.emitter, [event].concat(args));
   }
 
   /**

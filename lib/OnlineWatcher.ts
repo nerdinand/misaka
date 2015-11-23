@@ -92,7 +92,7 @@ export class OnlineWatcher {
    * Wrapper for _emitter.emit.
    */
   _emit(event: string, ...args: any[]): boolean {
-    return this._emitter.emit(event, args);
+    return <boolean>this._emitter.emit.apply(this._emitter, [event].concat(args));
   }
 
   /**
