@@ -245,11 +245,13 @@ Misaka.prototype.setupEvents = function(client) {
 
       var db = misaka.getDbManager();
 
-      db.insertMessageToLog(roomname, username, message, function(err) {
-        if(err) {
-          logger.error(err, { msg: 'Error logging message' });
-        }
-      });
+      if(db) {
+        db.insertMessageToLog(roomname, username, message, function(err) {
+          if(err) {
+            logger.error(err, { msg: 'Error logging message' });
+          }
+        });
+      }
 
       // Check if command
       if(misaka.cmdproc.isCommand(username, message)
@@ -472,6 +474,11 @@ Misaka.prototype.initConfig = function() {
  * Initialize the database manager.
  */
 Misaka.prototype.initDbManager = function() {
+  // Skip initializing if there is no DB config
+  if(!this.config.getDb()) {
+    return;
+  }
+
   this._db = new DbManager({
     // path: this.config.getDbPath()
     config: this.config.getDb()
