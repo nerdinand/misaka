@@ -499,7 +499,9 @@ Misaka.prototype.getDbManager = function() {
 };
 
 Misaka.prototype.initModules = function() {
-  this.modules.loadFromDirectory();
+  var disabledModules = this.config.getDisabledModules();
+
+  this.modules.loadFromDirectory(null, disabledModules);
 
   // Load from lib/modules/private if it exists
   var privPath = path.join(__dirname, '..', 'lib', 'modules', 'private'),
